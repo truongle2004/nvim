@@ -206,6 +206,9 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 "git status
 Plug 'lewis6991/gitsigns.nvim'
 
+" ESLint integration
+Plug 'dense-analysis/ale'
+
 
 
 
@@ -250,12 +253,8 @@ autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
 vnoremap <C-r> "hy:%s/<C-r>h//gc<left><left><left>
 
-" eslint
-nnoremap <leader>esl :CocCommand eslint.executeAutoFix<CR>
-
 
 command! -nargs=0 Prettier :CocCommand prettier.forceFormatDocument
-autocmd CursorHold,CursorHoldI * silent! :Prettier
 vmap <leader>f  <Plug>(coc-format-selected)
 nmap <leader>f  <Plug>(coc-format-selected)
 
@@ -289,7 +288,6 @@ function! SetupEasyMotion()
   nmap <leader><leader> <Plug>(easymotion-prefix)
   " Add any other mappings you need for EasyMotion
 endfunction
-
 
 "easy-motion
 
@@ -378,6 +376,18 @@ cnoremap <C-j> <C-d>
 vnoremap <C-j> <C-d>
 
 
+" eslint configuration
+let g:ale_linters = {
+    \ 'javascript': ['eslint'],
+    \ 'javascript.jsx': ['eslint'],
+    \ 'typescript': ['eslint'],
+    \ 'typescript.jsx': ['eslint'],
+    \ }
+
+" Enable ALE globally
+let g:ale_enabled = 1
+
+
 
 
 " Enable NERDTree Git
@@ -430,8 +440,6 @@ command! -nargs=0 Prettier :CocCommand prettier.forceFormatDocument
 " neovide transparent
 let g:neovide_transparency=0.7
 
-"add config tailwind css
-  au FileType html let b:coc_root_patterns = ['.git', '.env', 'tailwind.config.js', 'tailwind.config.cjs']
 
 
 lua <<EOF
@@ -490,10 +498,6 @@ require('lspconfig').cssls.setup {
   capabilities = capabilities,
 }
 
--- set up eslint lsp
-require('lspconfig').eslint.setup {
-  capabilities = capabilities,
-}
 -- set up lspconfig for c++
 require('lspconfig').clangd.setup{
   capabilities = capabilities,
