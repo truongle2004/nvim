@@ -199,17 +199,17 @@ require("lazy").setup({
 			require("tiny-inline-diagnostic").setup()
 		end,
 	},
-	{
-		"ellisonleao/gruvbox.nvim",
-		priority = 1000,
-		config = function()
-			require("gruvbox").setup({
-				-- transparent_mode = true,
-			})
-			vim.o.background = "dark" -- or "light" for light mode
-			vim.cmd([[colorscheme gruvbox]])
-		end,
-	},
+	-- {
+	-- 	"ellisonleao/gruvbox.nvim",
+	-- 	priority = 1000,
+	-- 	config = function()
+	-- 		require("gruvbox").setup({
+	-- 			-- transparent_mode = true,
+	-- 		})
+	-- 		vim.o.background = "dark" -- or "light" for light mode
+	-- 		vim.cmd([[colorscheme gruvbox]])
+	-- 	end,
+	-- },
 	-- {
 	-- 	"catppuccin/nvim",
 	-- 	name = "catppuccin",
@@ -218,31 +218,31 @@ require("lazy").setup({
 	-- 		vim.cmd.colorscheme("catppuccin")
 	-- 	end,
 	-- },
-	-- {
-	-- 	"wincent/base16-nvim",
-	-- 	lazy = false, -- load at start
-	-- 	priority = 1000, -- load first
-	-- 	config = function()
-	-- 		vim.cmd([[colorscheme base16-gruvbox-dark-hard]])
-	-- 		vim.o.background = "dark"
-	-- 		-- XXX: hi Normal ctermbg=NONE
-	-- 		-- Make comments more prominent -- they are important.
-	-- 		local bools = vim.api.nvim_get_hl(0, { name = "Boolean" })
-	-- 		vim.api.nvim_set_hl(0, "Comment", bools)
-	-- 		-- Make it clearly visible which argument we're at.
-	-- 		local marked = vim.api.nvim_get_hl(0, { name = "PMenu" })
-	-- 		vim.api.nvim_set_hl(
-	-- 			0,
-	-- 			"LspSignatureActiveParameter",
-	-- 			{ fg = marked.fg, bg = marked.bg, ctermfg = marked.ctermfg, ctermbg = marked.ctermbg, bold = true }
-	-- 		)
-	-- 		-- XXX
-	-- 		-- Would be nice to customize the highlighting of warnings and the like to make
-	-- 		-- them less glaring. But alas
-	-- 		-- https://github.com/nvim-lua/lsp_extensions.nvim/issues/21
-	-- 		-- call Base16hi("CocHintSign", g:base16_gui03, "", g:base16_cterm03, "", "", "")
-	-- 	end,
-	-- },
+	{
+		"wincent/base16-nvim",
+		lazy = false, -- load at start
+		priority = 1000, -- load first
+		config = function()
+			vim.cmd([[colorscheme base16-gruvbox-dark-hard]])
+			vim.o.background = "dark"
+			-- XXX: hi Normal ctermbg=NONE
+			-- Make comments more prominent -- they are important.
+			local bools = vim.api.nvim_get_hl(0, { name = "Boolean" })
+			vim.api.nvim_set_hl(0, "Comment", bools)
+			-- Make it clearly visible which argument we're at.
+			local marked = vim.api.nvim_get_hl(0, { name = "PMenu" })
+			vim.api.nvim_set_hl(
+				0,
+				"LspSignatureActiveParameter",
+				{ fg = marked.fg, bg = marked.bg, ctermfg = marked.ctermfg, ctermbg = marked.ctermbg, bold = true }
+			)
+			-- XXX
+			-- Would be nice to customize the highlighting of warnings and the like to make
+			-- them less glaring. But alas
+			-- https://github.com/nvim-lua/lsp_extensions.nvim/issues/21
+			-- call Base16hi("CocHintSign", g:base16_gui03, "", g:base16_cterm03, "", "", "")
+		end,
+	},
 	-- {
 	-- 	"folke/tokyonight.nvim",
 	-- 	lazy = false,
@@ -396,6 +396,10 @@ require("lazy").setup({
 				capabilities = capabilities,
 			})
 
+			lspconfig.templ.setup({
+				capabilities = capabilities,
+			})
+
 			lspconfig.gopls.setup({})
 
 			lspconfig.htmx.setup({})
@@ -536,7 +540,9 @@ require("lazy").setup({
 
 			lspconfig.html.setup({
 				capabilities = capabilities,
+				filetypes = { "html", "templ" },
 			})
+
 			lspconfig.cssls.setup({
 				capabilities = capabilities,
 			})
@@ -781,6 +787,7 @@ require("lazy").setup({
 				"%.lst",
 				"node_modules",
 				"targets",
+				"*_templ.go",
 			}
 
 			telescope.setup({
@@ -1174,7 +1181,7 @@ map("n", "<leader>sc", ":source %<cr>")
 map("t", "<C-x>", [[<C-\><C-n>]], { noremap = true, silent = true })
 map("n", "<F3>", ":set spell! spell?<CR>", { noremap = true, silent = true })
 map("n", "<leader>rq", ":cfdo %s///g | update | bd")
-map("n", "<leader>te", ":vs | term<CR>", { noremap = true, silent = true })
+map("n", "<leader>te", ":sp | term<CR>", { noremap = true, silent = true })
 map("n", "<leader>go", ":TSToolsOrganizeImports<CR>")
 map("n", "<leader>gi", ":TSToolsAddMissingImports<CR>")
 map("n", "<leader>cm", ":delmarks!<CR>")
