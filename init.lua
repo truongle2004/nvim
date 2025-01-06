@@ -402,7 +402,10 @@ require("lazy").setup({
 
 			lspconfig.gopls.setup({})
 
-			lspconfig.htmx.setup({})
+			lspconfig.htmx.setup({
+				capabilities = capabilities,
+				filetypes = { "html", "templ" },
+			})
 
 			local pyright_restarted = false
 
