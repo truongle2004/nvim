@@ -2,7 +2,6 @@ vim.loader.enable()
 ---@diagnostic disable: undefined-global
 --@diagnostic disable: missing-fields
 --@diagnostic disable: missing-fields, param-type-mismatch, undefined-field vim.loader.enable()
---
 
 local function find_venv(start_path) -- Finds the venv folder required for LSP
     -- Check current directory (if venv folder is at root)
@@ -30,12 +29,14 @@ local function find_venv(start_path) -- Finds the venv folder required for LSP
     return nil
 end
 
-if vim.g.neovide then
-    -- vim.o.guifont = "FiraCode Nerd Font:h10"
-    -- vim.o.guifont = "ZedMono Nerd Font :h10"
-    vim.o.guifont = ":h10"
-end
+-- if vim.g.neovide then
+--     -- vim.o.guifont = "FiraCode Nerd Font:h10"
+--     -- vim.o.guifont = "ZedMono Nerd Font :h10"
+--     vim.o.guifont = ":h10"
+-- end
+--
 
+local map = vim.keymap.set
 
 -- vim.cmd([[set foldmethod=indent]])
 
@@ -51,13 +52,13 @@ opt.termguicolors = true
 opt.relativenumber = true
 opt.number = true
 opt.scrolloff = 10
-opt.laststatus = 3
+-- opt.laststatus = 1
 vim.o.undofile = true
-
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "*",
     command = "setlocal tabstop=4 shiftwidth=4 softtabstop=4",
 })
+
 -- vim.api.nvim_create_autocmd("FileType", {
 -- 	pattern = "cpp",
 -- 	command = "setlocal tabstop=4 shiftwidth=4 softtabstop=4",
@@ -147,7 +148,12 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-    -- { "nvim-java/nvim-java", ft = { "java" } },
+    -- {
+    --     "nvim-java/nvim-java",
+    --     ft = { "java" },
+    --     config = function()
+    --     end
+    -- },
     {
         "ray-x/go.nvim",
         ft = { "go", "gomod" },
@@ -170,71 +176,127 @@ require("lazy").setup({
                 group = format_sync_grp,
             })
 
-            vim.diagnostic.config({ virtual_text = false })
+            -- vim.diagnostic.config({ virtual_text = false })
         end,
 
     },
     -- {
-    -- 	"rcarriga/nvim-dap-ui",
-    -- 	dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
-    -- 	config = function()
-    -- 		require("dapui").setup()
-    -- 	end,
+    --     "rcarriga/nvim-dap-ui",
+    --     ft = "java",
+    --     dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
+    --     config = function()
+    --         require("dapui").setup()
+    --     end,
+    -- },
+    -- {
+    --     "ray-x/lsp_signature.nvim",
+    --     event = "VeryLazy",
+    --     opts = {},
+    --     config = function(_, opts)
+    --         require("lsp_signature").setup({
+    --             doc_lines = 0,
+    --             handler_opts = {
+    --                 border = "none",
+    --             },
+    --         })
+    --     end,
+    -- },
+    -- {
+    --     "rachartier/tiny-inline-diagnostic.nvim",
+    --     event = "VeryLazy", -- Or `LspAttach`
+    --     priority = 1000,    -- needs to be loaded in first
+    --     config = function()
+    --         require("tiny-inline-diagnostic").setup()
+    --     end,
+    -- },
+    -- {
+    --     "catppuccin/nvim",
+    --     name = "catppuccin",
+    --     priority = 1000,
+    --     config = function()
+    --         require("catppuccin").setup({
+    --             transparent_background = true
+    --         })
+    --         vim.cmd.colorscheme("catppuccin")
+    --     end,
+    -- },
+    -- {
+    --     "neanias/everforest-nvim",
+    --     version = false,
+    --     lazy = false,
+    --     priority = 1000, -- make sure to load this before all the other start plugins
+    --     -- Optional; default configuration will be used if setup isn't called.
+    --     config = function()
+    --         require("everforest").setup({
+    --             -- Your config here
+    --         })
+    --         require("everforest").load()
+    --     end,
+    -- },
+    -- {
+    --     "rose-pine/neovim",
+    --     name = "rose-pine",
+    --     config = function()
+    --         require("rose-pine").setup({
+    --             styles = {
+    --                 transparency = true
+    --             }
+    --         })
+    --         vim.cmd("colorscheme rose-pine")
+    --     end
+    -- },
+    -- {
+    --     "sainnhe/gruvbox-material",
+    --     config = function ()
+    --         vim.cmd[[colorscheme gruvbox-material]]
+    --     end
+    -- },
+    -- {
+    --     "ellisonleao/gruvbox.nvim",
+    --     priority = 1000,
+    --     opts = ...,
+    --     config = function()
+    --         vim.o.background = "dark" -- or "light" for light mode
+    --         require("gruvbox").setup({
+    --             transparent_mode = false
+    --         })
+    --         vim.cmd([[colorscheme gruvbox]])
+    --     end
+    -- },
+    -- {
+    --     "wincent/base16-nvim",
+    --     lazy = false,    -- load at start
+    --     priority = 1000, -- load first
+    --     config = function()
+    --         vim.cmd([[colorscheme gruvbox-dark-hard]])
+    --         vim.o.background = "dark"
+    --         -- XXX: hi Normal ctermbg=NONE
+    --         -- Make comments more prominent -- they are important.
+    --         local bools = vim.api.nvim_get_hl(0, { name = "Boolean" })
+    --         vim.api.nvim_set_hl(0, "Comment", bools)
+    --         -- Make it clearly visible which argument we're at.
+    --         local marked = vim.api.nvim_get_hl(0, { name = "PMenu" })
+    --         vim.api.nvim_set_hl(
+    --             0,
+    --             "LspSignatureActiveParameter",
+    --             { fg = marked.fg, bg = marked.bg, ctermfg = marked.ctermfg, ctermbg = marked.ctermbg, bold = true }
+    --         )
+    --         -- XXX
+    --         -- Would be nice to customize the highlighting of warnings and the like to make
+    --         -- them less glaring. But alas
+    --         -- https://github.com/nvim-lua/lsp_extensions.nvim/issues/21
+    --         -- call Base16hi("CocHintSign", g:base16_gui03, "", g:base16_cterm03, "", "", "")
+    --     end,
     -- },
     {
-        "ray-x/lsp_signature.nvim",
-        event = "VeryLazy",
-        opts = {},
-        config = function(_, opts)
-            require("lsp_signature").setup({
-                doc_lines = 0,
-                handler_opts = {
-                    border = "none",
-                },
+        "Mofiqul/dracula.nvim",
+        lazy = false,
+        config = function()
+            require("dracula").setup({
+                transparent_bg = false
             })
-        end,
-    },
-    {
-        "rachartier/tiny-inline-diagnostic.nvim",
-        event = "VeryLazy", -- Or `LspAttach`
-        priority = 1000,    -- needs to be loaded in first
-        config = function()
-            require("tiny-inline-diagnostic").setup()
-        end,
-    },
-
-    -- {
-    -- 	"catppuccin/nvim",
-    -- 	name = "catppuccin",
-    -- 	priority = 1000,
-    -- 	config = function()
-    -- 		vim.cmd.colorscheme("catppuccin")
-    -- 	end,
-    -- },
-    {
-        "wincent/base16-nvim",
-        lazy = false,    -- load at start
-        priority = 1000, -- load first
-        config = function()
-            vim.cmd([[colorscheme gruvbox-dark-hard]])
-            vim.o.background = "dark"
-            -- XXX: hi Normal ctermbg=NONE
-            -- Make comments more prominent -- they are important.
-            local bools = vim.api.nvim_get_hl(0, { name = "Boolean" })
-            vim.api.nvim_set_hl(0, "Comment", bools)
-            -- Make it clearly visible which argument we're at.
-            local marked = vim.api.nvim_get_hl(0, { name = "PMenu" })
-            vim.api.nvim_set_hl(
-                0,
-                "LspSignatureActiveParameter",
-                { fg = marked.fg, bg = marked.bg, ctermfg = marked.ctermfg, ctermbg = marked.ctermbg, bold = true }
-            )
-            -- XXX
-            -- Would be nice to customize the highlighting of warnings and the like to make
-            -- them less glaring. But alas
-            -- https://github.com/nvim-lua/lsp_extensions.nvim/issues/21
-            -- call Base16hi("CocHintSign", g:base16_gui03, "", g:base16_cterm03, "", "", "")
-        end,
+            vim.cmd([[colorscheme dracula]])
+        end
     },
     -- {
     -- 	"folke/tokyonight.nvim",
@@ -256,7 +318,7 @@ require("lazy").setup({
     --     config = function()
     --         vim.o.background = "dark"
     --         require("solarized-osaka").setup({
-    --             transparent = true,
+    --             transparent = false,
     --         })
     --         vim.cmd([[colorscheme solarized-osaka]])
     --     end,
@@ -271,43 +333,6 @@ require("lazy").setup({
             })
         end,
     },
-    -- {
-    -- 	"folke/trouble.nvim",
-    -- 	opts = {}, -- for default options, refer to the configuration section for custom setup.
-    -- 	cmd = "Trouble",
-    -- 	keys = {
-    -- 		{
-    -- 			"<leader>xx",
-    -- 			"<cmd>Trouble diagnostics toggle<cr>",
-    -- 			desc = "Diagnostics (Trouble)",
-    -- 		},
-    -- 		{
-    -- 			"<leader>xX",
-    -- 			"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
-    -- 			desc = "Buffer Diagnostics (Trouble)",
-    -- 		},
-    -- 		{
-    -- 			"<leader>cs",
-    -- 			"<cmd>Trouble symbols toggle focus=false<cr>",
-    -- 			desc = "Symbols (Trouble)",
-    -- 		},
-    -- 		{
-    -- 			"<leader>cl",
-    -- 			"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
-    -- 			desc = "LSP Definitions / references / ... (Trouble)",
-    -- 		},
-    -- 		{
-    -- 			"<leader>xL",
-    -- 			"<cmd>Trouble loclist toggle<cr>",
-    -- 			desc = "Location List (Trouble)",
-    -- 		},
-    -- 		{
-    -- 			"<leader>xQ",
-    -- 			"<cmd>Trouble qflist toggle<cr>",
-    -- 			desc = "Quickfix List (Trouble)",
-    -- 		},
-    -- 	},
-    -- },
     {
         "stevearc/conform.nvim",
         event = { "BufReadPre", "BufNewFile" },
@@ -332,7 +357,12 @@ require("lazy").setup({
                     python = { "black" },
                     xml = { "xmlformatter" },
                 },
+                -- format_on_save = {
+                --     timeout_ms = 500,
+                --     lsp_format = "fallback"
+                -- }
             })
+
 
             vim.keymap.set({ "n", "v" }, "<leader>mp", function()
                 conform.format({
@@ -383,8 +413,19 @@ require("lazy").setup({
             local capabilities = cmp_nvim_lsp.default_capabilities()
 
             -- lspconfig.jdtls.setup({
-            -- 	capabilities = capabilities,
+            --     capabilities = capabilities,
             -- })
+
+
+            lspconfig.astro.setup({
+                capabilities = capabilities,
+            })
+
+
+            lspconfig.prismals.setup({
+                capabilities = capabilities,
+            })
+
 
             lspconfig.yamlls.setup({
                 capabilities = capabilities,
@@ -394,7 +435,9 @@ require("lazy").setup({
                 capabilities = capabilities,
             })
 
-            lspconfig.gopls.setup({})
+            lspconfig.gopls.setup({
+                capabilities = capabilities,
+            })
 
             lspconfig.htmx.setup({
                 capabilities = capabilities,
@@ -429,41 +472,41 @@ require("lazy").setup({
                 end,
             })
 
-            lspconfig.clangd.setup({
-                capabilities = capabilities,
-                cmd = {
-                    "D:\\main\\gcc\\winlibs-x86_64-mcf-seh-gcc-13.2.0-llvm-16.0.6-mingw-w64ucrt-11.0.1-r2\\mingw64\\bin\\clangd.exe", -- Full path to clangd on Windows
-                    "--background-index",                                                                                             -- Enable background indexing
-                    "--pch-storage=memory",                                                                                           -- Use memory for precompiled headers
-                    "--all-scopes-completion",                                                                                        -- Complete across all available scopes
-                    "--pretty",                                                                                                       -- Pretty-print diagnostics
-                    "--header-insertion=never",                                                                                       -- Disable automatic header insertion
-                    "-j=4",                                                                                                           -- Limit number of parallel jobs
-                    "--function-arg-placeholders=false",                                                                              -- Disable function argument placeholders
-                    "--completion-style=detailed",                                                                                    -- Provide detailed completion information
-                    "--log=verbose",                                                                                                  -- (Optional) Enable verbose logging for debugging
-                },
-                on_attach = function(client)
-                    client.server_capabilities.inlayHintProvider = false
-                end,
-            })
+            -- lspconfig.clangd.setup({
+            --     capabilities = capabilities,
+            --     -- cmd = {
+            --     --     "D:\\main\\gcc\\winlibs-x86_64-mcf-seh-gcc-13.2.0-llvm-16.0.6-mingw-w64ucrt-11.0.1-r2\\mingw64\\bin\\clangd.exe", -- Full path to clangd on Windows
+            --     --     "--background-index",                                                                                             -- Enable background indexing
+            --     --     "--pch-storage=memory",                                                                                           -- Use memory for precompiled headers
+            --     --     "--all-scopes-completion",                                                                                        -- Complete across all available scopes
+            --     --     "--pretty",                                                                                                       -- Pretty-print diagnostics
+            --     --     "--header-insertion=never",                                                                                       -- Disable automatic header insertion
+            --     --     "-j=4",                                                                                                           -- Limit number of parallel jobs
+            --     --     "--function-arg-placeholders=false",                                                                              -- Disable function argument placeholders
+            --     --     "--completion-style=detailed",                                                                                    -- Provide detailed completion information
+            --     --     "--log=verbose",                                                                                                  -- (Optional) Enable verbose logging for debugging
+            --     -- },
+            --     -- on_attach = function(client)
+            --     --     client.server_capabilities.inlayHintProvider = false
+            --     -- end,
+            -- })
 
             lspconfig.lua_ls.setup({
                 capabilities = capabilities,
-                settings = {
-                    Lua = {
-                        diagnostics = {
-                            globals = { "vim" },
-                        },
-                        workspace = {
-                            library = {
-                                [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-                                [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
-                                [vim.fn.expand("${3rd}/love2d/library")] = true,
-                            },
-                        },
-                    },
-                },
+                -- settings = {
+                --     Lua = {
+                --         diagnostics = {
+                --             globals = { "vim" },
+                --         },
+                --         workspace = {
+                --             library = {
+                --                 [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+                --                 [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
+                --                 [vim.fn.expand("${3rd}/love2d/library")] = true,
+                --             },
+                --         },
+                --     },
+                -- },
             })
 
             local customizations = {
@@ -538,6 +581,10 @@ require("lazy").setup({
             lspconfig.html.setup({
                 capabilities = capabilities,
                 filetypes = { "html", "templ" },
+            })
+
+            lspconfig.jsonls.setup({
+                capabilities = capabilities,
             })
 
             lspconfig.cssls.setup({
@@ -639,7 +686,14 @@ require("lazy").setup({
         filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
         opts = {},
         config = function()
+            local api = require("typescript-tools.api")
             require("typescript-tools").setup({
+                handlers = {
+                    ["textDocument/publishDiagnostics"] = api.filter_diagnostics(
+                    -- Ignore 'This may be converted to an async function' diagnostics.
+                        { 80006 }
+                    ),
+                },
                 settings = {
                     jsx_close_tag = {
                         enable = true,
@@ -670,6 +724,9 @@ require("lazy").setup({
             "onsails/lspkind.nvim",         -- vs-code like pictograms
         },
         config = function()
+            -- color for cmp background
+            -- vim.api.nvim_set_hl(0, "CmpNormal", { bg = "#808080" })
+
             local cmp = require("cmp")
 
             local luasnip = require("luasnip")
@@ -713,6 +770,15 @@ require("lazy").setup({
                         ellipsis_char = "...",
                     }),
                 },
+                window = {
+                    completion = {
+                        border = "rounded",
+                        winhighlight = "Normal:CmpNormal",
+                    },
+                    documentation = {
+                        winhighlight = "Normal:CmpDocNormal",
+                    }
+                }
             })
 
             vim.keymap.set({ "i" }, "<C-K>", function()
@@ -736,16 +802,6 @@ require("lazy").setup({
             -- "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
         },
     },
-    -- {
-    -- 	"nvim-tree/nvim-tree.lua",
-    -- 	config = function()
-    -- 		require("nvim-tree").setup({
-    -- 			view = {
-    -- 				width = 40,
-    -- 			},
-    -- 		})
-    -- 	end,
-    -- },
     {
         "kylechui/nvim-surround",
         version = "*", -- Use for stability; omit to use `main` branch for the latest features
@@ -816,23 +872,30 @@ require("lazy").setup({
             )
         end,
     },
-    -- {
-    -- 	"nvim-lualine/lualine.nvim",
-    -- 	dependencies = { "nvim-tree/nvim-web-devicons" },
-    -- 	config = function()
-    -- 		---@diagnostic disable-next-line: missing-parameter
-    -- 		require("lualine").setup()
-    -- 	end,
-    -- },
     {
-        "akinsho/bufferline.nvim",
-        version = "*",
-        dependencies = "nvim-tree/nvim-web-devicons",
+        "nvim-lualine/lualine.nvim",
+        dependencies = { "nvim-tree/nvim-web-devicons" },
         config = function()
-            vim.opt.termguicolors = true
-            require("bufferline").setup({})
+            ---@diagnostic disable-next-line: missing-parameter
+            require("lualine").setup({
+                options = {
+                    icons_enabled = true,
+                    theme = 'auto',
+                    component_separators = '|',
+                    section_separators = { left = '', right = '' },
+                }
+            })
         end,
     },
+    -- {
+    --     "akinsho/bufferline.nvim",
+    --     version = "*",
+    --     dependencies = "nvim-tree/nvim-web-devicons",
+    --     config = function()
+    --         vim.opt.termguicolors = true
+    --         require("bufferline").setup({})
+    --     end,
+    -- },
     {
         "nvim-tree/nvim-web-devicons"
     },
@@ -854,85 +917,86 @@ require("lazy").setup({
         },
         version = "*",
         config = function()
-            -- require("mini.comment").setup()
+            require("mini.comment").setup()
 
             -- require("mini.indentscope").setup()
 
             -- require("mini.statusline").setup()
 
             -- vim.cmd.colorscheme("minischeme")
-            -- require("mini.tabline").setup()
+
+            require("mini.tabline").setup()
 
             require("mini.move").setup()
             --
             require("mini.pairs").setup()
             --
-            -- local hipatterns = require("mini.hipatterns")
-            -- hipatterns.setup({
-            -- 	highlighters = {
-            -- 		-- Highlight standalone 'FIXME', 'HACK', 'TODO', 'NOTE'
-            -- 		fixme = { pattern = "%f[%w]()FIXME()%f[%W]", group = "MiniHipatternsFixme" },
-            -- 		hack = { pattern = "%f[%w]()HACK()%f[%W]", group = "MiniHipatternsHack" },
-            -- 		todo = { pattern = "%f[%w]()TODO()%f[%W]", group = "MiniHipatternsTodo" },
-            -- 		note = { pattern = "%f[%w]()NOTE()%f[%W]", group = "MiniHipatternsNote" },
-            --
-            -- 		-- Highlight hex color strings (`#rrggbb`) using that color
-            -- 		hex_color = hipatterns.gen_highlighter.hex_color(),
-            -- 	},
-            -- })
-            --
-            -- require("mini.diff").setup({
-            -- 	-- Options for how hunks are visualized
-            -- 	view = {
-            -- 		-- Visualization style. Possible values are 'sign' and 'number'.
-            -- 		-- Default: 'number' if line numbers are enabled, 'sign' otherwise.
-            -- 		style = "sign",
-            --
-            -- 		-- Signs used for hunks with 'sign' view
-            -- 		signs = { add = "+", change = "~", delete = "-" },
-            --
-            -- 		-- Priority of used visualization extmarks
-            --
-            -- 		priority = 199,
-            -- 	},
-            -- 	-- Module mappings. Use `''` (empty string) to disable one.
-            -- 	mappings = {
-            -- 		-- Apply hunks inside a visual/operator region
-            -- 		apply = "gh",
-            --
-            -- 		-- Reset hunks inside a visual/operator region
-            -- 		reset = "gH",
-            --
-            -- 		-- Hunk range textobject to be used inside operator
-            -- 		-- Works also in Visual mode if mapping differs from apply and reset
-            --
-            -- 		textobject = "gh",
-            --
-            -- 		-- Go to hunk range in corresponding direction
-            -- 		goto_first = "[H",
-            -- 		goto_prev = "[h",
-            --
-            -- 		goto_next = "]h",
-            -- 		goto_last = "]H",
-            -- 	},
-            --
-            -- 	-- Various options
-            --
-            -- 	options = {
-            -- 		-- Diff algorithm. See `:h vim.diff()`.
-            -- 		algorithm = "histogram",
-            --
-            -- 		-- Whether to use "indent heuristic". See `:h vim.diff()`.
-            -- 		indent_heuristic = true,
-            --
-            -- 		-- The amount of second-stage diff to align lines (in Neovim>=0.9)
-            --
-            -- 		linematch = 60,
-            --
-            -- 		-- Whether to wrap around edges during hunk navigation
-            -- 		wrap_goto = false,
-            -- 	},
-            -- })
+            local hipatterns = require('mini.hipatterns')
+            hipatterns.setup({
+                highlighters = {
+                    -- Highlight standalone 'FIXME', 'HACK', 'TODO', 'NOTE'
+                    fixme     = { pattern = '%f[%w]()FIXME()%f[%W]', group = 'MiniHipatternsFixme' },
+                    hack      = { pattern = '%f[%w]()HACK()%f[%W]', group = 'MiniHipatternsHack' },
+                    todo      = { pattern = '%f[%w]()TODO()%f[%W]', group = 'MiniHipatternsTodo' },
+                    note      = { pattern = '%f[%w]()NOTE()%f[%W]', group = 'MiniHipatternsNote' },
+
+                    -- Highlight hex color strings (`#rrggbb`) using that color
+                    hex_color = hipatterns.gen_highlighter.hex_color(),
+                },
+            })
+
+            require("mini.diff").setup({
+                -- Options for how hunks are visualized
+                view = {
+                    -- Visualization style. Possible values are 'sign' and 'number'.
+                    -- Default: 'number' if line numbers are enabled, 'sign' otherwise.
+                    style = "sign",
+
+                    -- Signs used for hunks with 'sign' view
+                    signs = { add = "+", change = "~", delete = "-" },
+
+                    -- Priority of used visualization extmarks
+
+                    priority = 199,
+                },
+                -- Module mappings. Use `''` (empty string) to disable one.
+                mappings = {
+                    -- Apply hunks inside a visual/operator region
+                    apply = "gh",
+
+                    -- Reset hunks inside a visual/operator region
+                    reset = "gH",
+
+                    -- Hunk range textobject to be used inside operator
+                    -- Works also in Visual mode if mapping differs from apply and reset
+
+                    textobject = "gh",
+
+                    -- Go to hunk range in corresponding direction
+                    goto_first = "[H",
+                    goto_prev = "[h",
+
+                    goto_next = "]h",
+                    goto_last = "]H",
+                },
+
+                -- Various options
+
+                options = {
+                    -- Diff algorithm. See `:h vim.diff()`.
+                    algorithm = "histogram",
+
+                    -- Whether to use "indent heuristic". See `:h vim.diff()`.
+                    indent_heuristic = true,
+
+                    -- The amount of second-stage diff to align lines (in Neovim>=0.9)
+
+                    linematch = 60,
+
+                    -- Whether to wrap around edges during hunk navigation
+                    wrap_goto = false,
+                },
+            })
         end,
     },
     {
@@ -951,210 +1015,218 @@ require("lazy").setup({
     --     lazy = false,
     -- },
     -- {
-    -- 	"folke/snacks.nvim",
-    -- 	priority = 1000,
-    -- 	lazy = false,
-    -- 	---@type snacks.Config
-    -- 	opts = {
-    -- 		bigfile = { enabled = true },
-    -- 		dashboard = { enabled = false },
-    -- 		indent = { enabled = true },
-    -- 		input = { enabled = false },
-    -- 		notifier = {
-    -- 			enabled = false,
-    -- 		},
-    -- 		quickfile = { enabled = true },
-    -- 		scroll = { enabled = false },
-    -- 		statuscolumn = { enabled = true },
-    -- 		words = { enabled = true },
-    -- 		styles = {
-    -- 			notification = {
-    -- 				-- wo = { wrap = true } -- Wrap notifications
-    -- 			},
-    -- 		},
-    -- 	},
-    -- 	keys = {
-    -- 		{
-    -- 			"<leader>z",
-    -- 			function()
-    -- 				Snacks.zen()
-    -- 			end,
-    -- 			desc = "Toggle Zen Mode",
-    -- 		},
-    -- 		{
-    -- 			"<leader>Z",
-    -- 			function()
-    -- 				Snacks.zen.zoom()
-    -- 			end,
-    -- 			desc = "Toggle Zoom",
-    -- 		},
-    -- 		{
-    -- 			"<leader>.",
-    -- 			function()
-    -- 				Snacks.scratch()
-    -- 			end,
-    -- 			desc = "Toggle Scratch Buffer",
-    -- 		},
-    -- 		{
-    -- 			"<leader>S",
-    -- 			function()
-    -- 				Snacks.scratch.select()
-    -- 			end,
-    -- 			desc = "Select Scratch Buffer",
-    -- 		},
-    -- 		{
-    -- 			"<leader>n",
-    -- 			function()
-    -- 				Snacks.notifier.show_history()
-    -- 			end,
-    -- 			desc = "Notification History",
-    -- 		},
-    -- 		{
-    -- 			"<leader>bd",
-    -- 			function()
-    -- 				Snacks.bufdelete()
-    -- 			end,
-    -- 			desc = "Delete Buffer",
-    -- 		},
-    -- 		{
-    -- 			"<leader>cR",
-    -- 			function()
-    -- 				Snacks.rename.rename_file()
-    -- 			end,
-    -- 			desc = "Rename File",
-    -- 		},
-    -- 		{
-    -- 			"<leader>gB",
-    -- 			function()
-    -- 				Snacks.gitbrowse()
-    -- 			end,
-    -- 			desc = "Git Browse",
-    -- 			mode = { "n", "v" },
-    -- 		},
-    -- 		{
-    -- 			"<leader>gb",
-    -- 			function()
-    -- 				Snacks.git.blame_line()
-    -- 			end,
-    -- 			desc = "Git Blame Line",
-    -- 		},
-    -- 		{
-    -- 			"<leader>gf",
-    -- 			function()
-    -- 				Snacks.lazygit.log_file()
-    -- 			end,
-    -- 			desc = "Lazygit Current File History",
-    -- 		},
-    -- 		{
-    -- 			"<leader>gg",
-    -- 			function()
-    -- 				Snacks.lazygit()
-    -- 			end,
-    -- 			desc = "Lazygit",
-    -- 		},
-    -- 		{
-    -- 			"<leader>gl",
-    -- 			function()
-    -- 				Snacks.lazygit.log()
-    -- 			end,
-    -- 			desc = "Lazygit Log (cwd)",
-    -- 		},
-    -- 		{
-    -- 			"<leader>un",
-    -- 			function()
-    -- 				Snacks.notifier.hide()
-    -- 			end,
-    -- 			desc = "Dismiss All Notifications",
-    -- 		},
-    -- 		{
-    -- 			"<c-/>",
-    -- 			function()
-    -- 				Snacks.terminal()
-    -- 			end,
-    -- 			desc = "Toggle Terminal",
-    -- 		},
-    -- 		{
-    -- 			"<c-_>",
-    -- 			function()
-    -- 				Snacks.terminal()
-    -- 			end,
-    -- 			desc = "which_key_ignore",
-    -- 		},
-    -- 		{
-    -- 			"]]",
-    -- 			function()
-    -- 				Snacks.words.jump(vim.v.count1)
-    -- 			end,
-    -- 			desc = "Next Reference",
-    -- 			mode = { "n", "t" },
-    -- 		},
-    -- 		{
-    -- 			"[[",
-    -- 			function()
-    -- 				Snacks.words.jump(-vim.v.count1)
-    -- 			end,
-    -- 			desc = "Prev Reference",
-    -- 			mode = { "n", "t" },
-    -- 		},
-    -- 		{
-    -- 			"<leader>N",
-    -- 			desc = "Neovim News",
-    -- 			function()
-    -- 				Snacks.win({
-    -- 					file = vim.api.nvim_get_runtime_file("doc/news.txt", false)[1],
-    -- 					width = 0.6,
-    -- 					height = 0.6,
-    -- 					wo = {
-    -- 						spell = false,
-    -- 						wrap = false,
-    -- 						signcolumn = "yes",
-    -- 						statuscolumn = " ",
-    -- 						conceallevel = 3,
-    -- 					},
-    -- 				})
-    -- 			end,
-    -- 		},
-    -- 	},
-    -- 	init = function()
-    -- 		vim.api.nvim_create_autocmd("User", {
-    -- 			pattern = "VeryLazy",
-    -- 			callback = function()
-    -- 				-- Setup some globals for debugging (lazy-loaded)
-    -- 				_G.dd = function(...)
-    -- 					Snacks.debug.inspect(...)
-    -- 				end
-    -- 				_G.bt = function()
-    -- 					Snacks.debug.backtrace()
-    -- 				end
-    -- 				vim.print = _G.dd -- Override print to use snacks for `:=` command
+    --     "folke/snacks.nvim",
+    --     priority = 1000,
+    --     lazy = false,
+    --     ---@type snacks.Config
+    --     opts = {
+    --         bigfile = { enabled = true },
+    --         dashboard = { enabled = false },
+    --         indent = { enabled = true },
+    --         input = { enabled = false },
+    --         notifier = {
+    --             enabled = false,
+    --         },
+    --         quickfile = { enabled = true },
+    --         scroll = { enabled = false },
+    --         statuscolumn = { enabled = true },
+    --         words = { enabled = true },
+    --         styles = {
+    --             notification = {
+    --                 -- wo = { wrap = true } -- Wrap notifications
+    --             },
+    --         },
+    --     },
+    --     keys = {
+    --         {
+    --             "<leader>z",
+    --             function()
+    --                 Snacks.zen()
+    --             end,
+    --             desc = "Toggle Zen Mode",
+    --         },
+    --         {
+    --             "<leader>Z",
+    --             function()
+    --                 Snacks.zen.zoom()
+    --             end,
+    --             desc = "Toggle Zoom",
+    --         },
+    --         {
+    --             "<leader>.",
+    --             function()
+    --                 Snacks.scratch()
+    --             end,
+    --             desc = "Toggle Scratch Buffer",
+    --         },
+    --         {
+    --             "<leader>S",
+    --             function()
+    --                 Snacks.scratch.select()
+    --             end,
+    --             desc = "Select Scratch Buffer",
+    --         },
+    --         {
+    --             "<leader>n",
+    --             function()
+    --                 Snacks.notifier.show_history()
+    --             end,
+    --             desc = "Notification History",
+    --         },
+    --         {
+    --             "<leader>bd",
+    --             function()
+    --                 Snacks.bufdelete()
+    --             end,
+    --             desc = "Delete Buffer",
+    --         },
+    --         {
+    --             "<leader>cR",
+    --             function()
+    --                 Snacks.rename.rename_file()
+    --             end,
+    --             desc = "Rename File",
+    --         },
+    --         {
+    --             "<leader>gB",
+    --             function()
+    --                 Snacks.gitbrowse()
+    --             end,
+    --             desc = "Git Browse",
+    --             mode = { "n", "v" },
+    --         },
+    --         {
+    --             "<leader>gb",
+    --             function()
+    --                 Snacks.git.blame_line()
+    --             end,
+    --             desc = "Git Blame Line",
+    --         },
+    --         {
+    --             "<leader>gf",
+    --             function()
+    --                 Snacks.lazygit.log_file()
+    --             end,
+    --             desc = "Lazygit Current File History",
+    --         },
+    --         {
+    --             "<leader>gg",
+    --             function()
+    --                 Snacks.lazygit()
+    --             end,
+    --             desc = "Lazygit",
+    --         },
+    --         {
+    --             "<leader>gl",
+    --             function()
+    --                 Snacks.lazygit.log()
+    --             end,
+    --             desc = "Lazygit Log (cwd)",
+    --         },
+    --         {
+    --             "<leader>un",
+    --             function()
+    --                 Snacks.notifier.hide()
+    --             end,
+    --             desc = "Dismiss All Notifications",
+    --         },
+    --         {
+    --             "<c-/>",
+    --             function()
+    --                 Snacks.terminal()
+    --             end,
+    --             desc = "Toggle Terminal",
+    --         },
+    --         {
+    --             "<c-_>",
+    --             function()
+    --                 Snacks.terminal()
+    --             end,
+    --             desc = "which_key_ignore",
+    --         },
+    --         {
+    --             "]]",
+    --             function()
+    --                 Snacks.words.jump(vim.v.count1)
+    --             end,
+    --             desc = "Next Reference",
+    --             mode = { "n", "t" },
+    --         },
+    --         {
+    --             "[[",
+    --             function()
+    --                 Snacks.words.jump(-vim.v.count1)
+    --             end,
+    --             desc = "Prev Reference",
+    --             mode = { "n", "t" },
+    --         },
+    --         {
+    --             "<leader>N",
+    --             desc = "Neovim News",
+    --             function()
+    --                 Snacks.win({
+    --                     file = vim.api.nvim_get_runtime_file("doc/news.txt", false)[1],
+    --                     width = 0.6,
+    --                     height = 0.6,
+    --                     wo = {
+    --                         spell = false,
+    --                         wrap = false,
+    --                         signcolumn = "yes",
+    --                         statuscolumn = " ",
+    --                         conceallevel = 3,
+    --                     },
+    --                 })
+    --             end,
+    --         },
+    --     },
+    --     init = function()
+    --         vim.api.nvim_create_autocmd("User", {
+    --             pattern = "VeryLazy",
+    --             callback = function()
+    --                 -- Setup some globals for debugging (lazy-loaded)
+    --                 _G.dd = function(...)
+    --                     Snacks.debug.inspect(...)
+    --                 end
+    --                 _G.bt = function()
+    --                     Snacks.debug.backtrace()
+    --                 end
+    --                 vim.print = _G.dd -- Override print to use snacks for `:=` command
     --
-    -- 				-- Create some toggle mappings
-    -- 				Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>us")
-    -- 				Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
-    -- 				Snacks.toggle.option("relativenumber", { name = "Relative Number" }):map("<leader>uL")
-    -- 				Snacks.toggle.diagnostics():map("<leader>ud")
-    -- 				Snacks.toggle.line_number():map("<leader>ul")
-    -- 				Snacks.toggle
-    -- 					.option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 })
-    -- 					:map("<leader>uc")
-    -- 				Snacks.toggle.treesitter():map("<leader>uT")
-    -- 				Snacks.toggle
-    -- 					.option("background", { off = "light", on = "dark", name = "Dark Background" })
-    -- 					:map("<leader>ub")
-    -- 				Snacks.toggle.inlay_hints():map("<leader>uh")
-    -- 				Snacks.toggle.indent():map("<leader>ug")
-    -- 				Snacks.toggle.dim():map("<leader>uD")
-    -- 			end,
-    -- 		})
-    -- 	end,
+    --                 -- Create some toggle mappings
+    --                 Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>us")
+    --                 Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
+    --                 Snacks.toggle.option("relativenumber", { name = "Relative Number" }):map("<leader>uL")
+    --                 Snacks.toggle.diagnostics():map("<leader>ud")
+    --                 Snacks.toggle.line_number():map("<leader>ul")
+    --                 Snacks.toggle
+    --                     .option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 })
+    --                     :map("<leader>uc")
+    --                 Snacks.toggle.treesitter():map("<leader>uT")
+    --                 Snacks.toggle
+    --                     .option("background", { off = "light", on = "dark", name = "Dark Background" })
+    --                     :map("<leader>ub")
+    --                 Snacks.toggle.inlay_hints():map("<leader>uh")
+    --                 Snacks.toggle.indent():map("<leader>ug")
+    --                 Snacks.toggle.dim():map("<leader>uD")
+    --             end,
+    --         })
+    --     end,
     -- },
+    {
+        'nvim-flutter/flutter-tools.nvim',
+        ft = { 'dart' },
+        lazy = false,
+        dependencies = {
+            'nvim-lua/plenary.nvim',
+            'stevearc/dressing.nvim', -- optional for vim.ui.select
+        },
+        config = function()
+            require("flutter-tools").setup {}
+            require("lsp")
+        end
+    }
 })
 
-require("lsp")
--- require("winbar")
--- require("auto_cmd")
-
-local map = vim.keymap.set
 
 map("n", "ff", ":lua vim.lsp.buf.format()<CR>")
 map("n", ";", ":", { desc = "CMD enter command mode" })
@@ -1211,3 +1283,12 @@ map("n", "<leader>ce", function()
         print("No diagnostic message found")
     end
 end)
+map("n", "<leader>n", ":Neotree reveal<cr>")
+
+
+
+require("lsp")
+-- require("winbar")
+-- require("auto_cmd")
+-- require("statusline")
+-- vim.cmd[[colorscheme miss-dracula]]
