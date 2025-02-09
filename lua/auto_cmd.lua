@@ -76,32 +76,32 @@ vim.api.nvim_create_autocmd('BufReadPost', {
 --     end,
 -- })
 
-vim.api.nvim_create_autocmd('FileType', {
-    group = vim.api.nvim_create_augroup('mariasolos/treesitter_folding', { clear = true }),
-    desc = 'Enable Treesitter folding',
-    callback = function(args)
-        local bufnr = args.buf
-
-        -- Because of perf, just use indentation for folding in huge files.
-        local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(bufnr))
-        if not ok or not stats or stats.size > (250 * 1024) then
-            vim.wo[0][0].foldmethod = 'indent'
-            return
-        end
-
-        -- Check that Treesitter works.
-        if not pcall(vim.treesitter.start, bufnr) then
-            return
-        end
-
-        -- Enable Treesitter folding.
-        vim.api.nvim_buf_call(bufnr, function()
-            vim.wo[0][0].foldmethod = 'expr'
-            vim.wo[0][0].foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-            vim.cmd.normal 'zx'
-        end)
-    end,
-})
+-- vim.api.nvim_create_autocmd('FileType', {
+--     group = vim.api.nvim_create_augroup('mariasolos/treesitter_folding', { clear = true }),
+--     desc = 'Enable Treesitter folding',
+--     callback = function(args)
+--         local bufnr = args.buf
+--
+--         -- Because of perf, just use indentation for folding in huge files.
+--         local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(bufnr))
+--         if not ok or not stats or stats.size > (250 * 1024) then
+--             vim.wo[0][0].foldmethod = 'indent'
+--             return
+--         end
+--
+--         -- Check that Treesitter works.
+--         if not pcall(vim.treesitter.start, bufnr) then
+--             return
+--         end
+--
+--         -- Enable Treesitter folding.
+--         vim.api.nvim_buf_call(bufnr, function()
+--             vim.wo[0][0].foldmethod = 'expr'
+--             vim.wo[0][0].foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+--             vim.cmd.normal 'zx'
+--         end)
+--     end,
+-- })
 
 vim.api.nvim_create_autocmd({ 'BufDelete', 'BufWipeout' }, {
     group = vim.api.nvim_create_augroup('mariasolos/wshada_on_buf_delete', { clear = true }),

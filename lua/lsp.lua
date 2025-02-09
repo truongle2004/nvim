@@ -233,23 +233,23 @@ vim.lsp.handlers[methods.textDocument_hover] = enhanced_float_handler(vim.lsp.ha
 vim.lsp.handlers[methods.textDocument_signatureHelp] = enhanced_float_handler(vim.lsp.handlers.signature_help, false)
 
 --- HACK: Override `vim.lsp.util.stylize_markdown` to use Treesitter.
----@param bufnr integer
----@param contents string[]
----@param opts table
----@return string[]
----@diagnostic disable-next-line: duplicate-set-field
-vim.lsp.util.stylize_markdown = function(bufnr, contents, opts)
-	contents = vim.lsp.util._normalize_markdown(contents, {
-		width = vim.lsp.util._make_floating_popup_size(contents, opts),
-	})
-	vim.bo[bufnr].filetype = "markdown"
-	vim.treesitter.start(bufnr)
-	vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, contents)
-
-	add_inline_highlights(bufnr)
-
-	return contents
-end
+-- ---@param bufnr integer
+-- ---@param contents string[]
+-- ---@param opts table
+-- ---@return string[]
+-- ---@diagnostic disable-next-line: duplicate-set-field
+-- vim.lsp.util.stylize_markdown = function(bufnr, contents, opts)
+-- 	contents = vim.lsp.util._normalize_markdown(contents, {
+-- 		width = vim.lsp.util._make_floating_popup_size(contents, opts),
+-- 	})
+-- 	vim.bo[bufnr].filetype = "markdown"
+-- 	vim.treesitter.start(bufnr)
+-- 	vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, contents)
+--
+-- 	add_inline_highlights(bufnr)
+--
+-- 	return contents
+-- end
 
 -- Update mappings when registering dynamic capabilities.
 local register_capability = vim.lsp.handlers[methods.client_registerCapability]

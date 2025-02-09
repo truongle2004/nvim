@@ -1,6 +1,9 @@
 {
     "diagnostics.disable": [
-        "missing-fields"
+        "missing-fields",
+        "param-type-mismatch",
+        "missing-parameter",
+        "undefined-field"
     ],
     "completion.autoRequire": false
 }
