@@ -71,79 +71,79 @@ local function on_attach(client, bufnr)
 		})
 	end
 
-	-- if client.supports_method(methods.textDocument_inlayHint) then
-	-- 	local inlay_hints_group = vim.api.nvim_create_augroup("mariasolos/toggle_inlay_hints", { clear = false })
-	--
-	-- 	-- Initial inlay hint display.
-	-- 	-- Idk why but without the delay inlay hints aren't displayed at the very start.
-	-- 	vim.defer_fn(function()
-	-- 		local mode = vim.api.nvim_get_mode().mode
-	-- 		vim.lsp.inlay_hint.enable(mode == "n" or mode == "v", { bufnr = bufnr })
-	-- 	end, 500)
-	--
-	-- 	vim.api.nvim_create_autocmd("InsertEnter", {
-	-- 		group = inlay_hints_group,
-	-- 		desc = "Enable inlay hints",
-	-- 		buffer = bufnr,
-	-- 		callback = function()
-	-- 			vim.lsp.inlay_hint.enable(false, { bufnr = bufnr })
-	-- 		end,
-	-- 	})
-	-- 	vim.api.nvim_create_autocmd("InsertLeave", {
-	-- 		group = inlay_hints_group,
-	-- 		desc = "Disable inlay hints",
-	-- 		buffer = bufnr,
-	-- 		callback = function()
-	-- 			vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
-	-- 		end,
-	-- 	})
-	-- end
+	if client.supports_method(methods.textDocument_inlayHint) then
+		local inlay_hints_group = vim.api.nvim_create_augroup("mariasolos/toggle_inlay_hints", { clear = false })
+
+		-- Initial inlay hint display.
+		-- Idk why but without the delay inlay hints aren't displayed at the very start.
+		vim.defer_fn(function()
+			local mode = vim.api.nvim_get_mode().mode
+			vim.lsp.inlay_hint.enable(mode == "n" or mode == "v", { bufnr = bufnr })
+		end, 500)
+
+		vim.api.nvim_create_autocmd("InsertEnter", {
+			group = inlay_hints_group,
+			desc = "Enable inlay hints",
+			buffer = bufnr,
+			callback = function()
+				vim.lsp.inlay_hint.enable(false, { bufnr = bufnr })
+			end,
+		})
+		vim.api.nvim_create_autocmd("InsertLeave", {
+			group = inlay_hints_group,
+			desc = "Disable inlay hints",
+			buffer = bufnr,
+			callback = function()
+				vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+			end,
+		})
+	end
 end
 
 -- Define the diagnostic signs.
--- for severity, icon in pairs(diagnostic_icons) do
--- 	local hl = "DiagnosticSign" .. severity:sub(1, 1) .. severity:sub(2):lower()
--- 	vim.fn.sign_define(hl, { text = icon, texthl = hl })
--- end
---
--- -- Diagnostic configuration.
--- vim.diagnostic.config({
--- 	virtual_text = {
--- 		prefix = "",
--- 		spacing = 2,
--- 		format = function(diagnostic)
--- 			local icon = diagnostic_icons[vim.diagnostic.severity[diagnostic.severity]]
--- 			local message = vim.split(diagnostic.message, "\n")[1]
--- 			return string.format("%s %s ", icon, message)
--- 		end,
--- 	},
--- 	float = {
--- 		border = "rounded",
--- 		source = "if_many",
--- 		-- Show severity icons as prefixes.
--- 		prefix = function(diag)
--- 			local level = vim.diagnostic.severity[diag.severity]
--- 			local prefix = string.format(" %s ", diagnostic_icons[level])
--- 			return prefix, "Diagnostic" .. level:gsub("^%l", string.upper)
--- 		end,
--- 	},
--- 	-- Disable signs in the gutter.
--- 	signs = false,
--- })
+for severity, icon in pairs(diagnostic_icons) do
+	local hl = "DiagnosticSign" .. severity:sub(1, 1) .. severity:sub(2):lower()
+	vim.fn.sign_define(hl, { text = icon, texthl = hl })
+end
+
+-- Diagnostic configuration.
+vim.diagnostic.config({
+	virtual_text = {
+		prefix = "",
+		spacing = 2,
+		format = function(diagnostic)
+			local icon = diagnostic_icons[vim.diagnostic.severity[diagnostic.severity]]
+			local message = vim.split(diagnostic.message, "\n")[1]
+			return string.format("%s %s ", icon, message)
+		end,
+	},
+	float = {
+		border = "rounded",
+		source = "if_many",
+		-- Show severity icons as prefixes.
+		prefix = function(diag)
+			local level = vim.diagnostic.severity[diag.severity]
+			local prefix = string.format(" %s ", diagnostic_icons[level])
+			return prefix, "Diagnostic" .. level:gsub("^%l", string.upper)
+		end,
+	},
+	-- Disable signs in the gutter.
+	signs = false,
+})
 
 -- Override the virtual text diagnostic handler so that the most severe diagnostic is shown first.
--- local show_handler = vim.diagnostic.handlers.virtual_text.show
--- assert(show_handler)
--- local hide_handler = vim.diagnostic.handlers.virtual_text.hide
--- vim.diagnostic.handlers.virtual_text = {
--- 	show = function(ns, bufnr, diagnostics, opts)
--- 		table.sort(diagnostics, function(diag1, diag2)
--- 			return diag1.severity > diag2.severity
--- 		end)
--- 		return show_handler(ns, bufnr, diagnostics, opts)
--- 	end,
--- 	hide = hide_handler,
--- }
+local show_handler = vim.diagnostic.handlers.virtual_text.show
+assert(show_handler)
+local hide_handler = vim.diagnostic.handlers.virtual_text.hide
+vim.diagnostic.handlers.virtual_text = {
+	show = function(ns, bufnr, diagnostics, opts)
+		table.sort(diagnostics, function(diag1, diag2)
+			return diag1.severity > diag2.severity
+		end)
+		return show_handler(ns, bufnr, diagnostics, opts)
+	end,
+	hide = hide_handler,
+}
 
 local md_namespace = vim.api.nvim_create_namespace("mariasolos/lsp_float")
 

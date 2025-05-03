@@ -30,15 +30,15 @@ local function find_venv(start_path) -- Finds the venv folder required for LSP
   return nil
 end
 
-
 local map = vim.keymap.set
 
+-- vim.o.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50"
 -- vim.cmd([[set foldmethod=indent]])
 local opt = vim.opt
 local api = vim.api
 local o = vim.o
-o.spelllang = "en_us"
-o.spell = true
+-- o.spelllang = "en_us"
+-- o.spell = true
 vim.g.mapleader = " "
 opt.shellquote = ""
 opt.shellxquote = ""
@@ -69,7 +69,7 @@ api.nvim_create_autocmd("FileType", {
   end,
 })
 
-
+vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20"
 vim.cmd([[let &t_Cs = "\e[4:3m"]])
 vim.cmd([[let &t_Ce = "\e[4:0m"]])
 
@@ -132,9 +132,8 @@ require("lazy").setup({
     event = { "CmdlineEnter" },
     build = ':lua require("go.install").update_all_sync()', -- if you need to install/update all binaries
     config = function()
-      require("go").setup()
+      require("go").setup({})
       -- Run gofmt + goimports on save
-
       local format_sync_grp = vim.api.nvim_create_augroup("goimports", {})
       vim.api.nvim_create_autocmd("BufWritePre", {
         pattern = "*.go",
@@ -168,17 +167,17 @@ require("lazy").setup({
       require("tiny-inline-diagnostic").setup()
     end,
   },
-  -- {
-  --   "catppuccin/nvim",
-  --   name = "catppuccin",
-  --   priority = 1000,
-  --   config = function()
-  --     require("catppuccin").setup({
-  --       transparent_background = false
-  --     })
-  --     vim.cmd.colorscheme("catppuccin")
-  --   end,
-  -- },
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 1000,
+    config = function()
+      require("catppuccin").setup({
+        transparent_background = false
+      })
+      vim.cmd.colorscheme("catppuccin")
+    end,
+  },
   -- {
   --   "ellisonleao/gruvbox.nvim",
   --   priority = 1000,
@@ -226,32 +225,32 @@ require("lazy").setup({
   --         vim.cmd([[colorscheme dracula]])
   --     end
   -- },
-  {
-    "craftzdog/solarized-osaka.nvim",
-    lazy = false,
-    priority = 1000,
-    opts = {},
-    config = function()
-      vim.o.background = "dark"
-      require("solarized-osaka").setup({
-        transparent = false,
-      })
-      vim.cmd([[colorscheme solarized-osaka]])
-    end,
-  },
   -- {
-  --   "nvim-treesitter/nvim-treesitter",
-  --   dependencies = {
-  --     "HiPhish/rainbow-delimiters.nvim"
-  --   },
+  --   "craftzdog/solarized-osaka.nvim",
+  --   lazy = false,
+  --   priority = 1000,
+  --   opts = {},
   --   config = function()
-  --     require("nvim-treesitter.configs").setup({
-  --       highlight = {
-  --         enable = true,
-  --       },
+  --     vim.o.background = "dark"
+  --     require("solarized-osaka").setup({
+  --       transparent = false,
   --     })
+  --     vim.cmd([[colorscheme solarized-osaka]])
   --   end,
   -- },
+  {
+    "nvim-treesitter/nvim-treesitter",
+    -- dependencies = {
+    --   "HiPhish/rainbow-delimiters.nvim"
+    -- },
+    config = function()
+      require("nvim-treesitter.configs").setup({
+        highlight = {
+          enable = true,
+        },
+      })
+    end,
+  },
   {
     "stevearc/conform.nvim",
     event = { "BufReadPre", "BufNewFile" },
@@ -870,30 +869,6 @@ require("lazy").setup({
   --   end,
   -- },
   {
-    "nvim-lualine/lualine.nvim",
-    config = function()
-      ---@diagnostic disable-next-line: missing-parameter
-      require("lualine").setup({
-        options = {
-          icons_enabled = true,
-          -- theme = 'solarized_dark',
-          theme = "codedark",
-          component_separators = '|',
-          section_separators = { left = '', right = '' },
-        }
-      })
-    end,
-  },
-  {
-    "akinsho/bufferline.nvim",
-    version = "*",
-    dependencies = "nvim-tree/nvim-web-devicons",
-    config = function()
-      vim.opt.termguicolors = true
-      require("bufferline").setup({})
-    end,
-  },
-  {
     "nvim-tree/nvim-web-devicons"
   },
   {
@@ -906,71 +881,74 @@ require("lazy").setup({
       require("mini.comment").setup()
       require("mini.move").setup()
       require("mini.pairs").setup()
-      -- local hipatterns = require('mini.hipatterns')
-      -- hipatterns.setup({
-      --   highlighters = {
-      --     -- Highlight standalone 'FIXME', 'HACK', 'TODO', 'NOTE'
-      --     fixme     = { pattern = '%f[%w]()FIXME()%f[%W]', group = 'MiniHipatternsFixme' },
-      --     hack      = { pattern = '%f[%w]()HACK()%f[%W]', group = 'MiniHipatternsHack' },
-      --     todo      = { pattern = '%f[%w]()TODO()%f[%W]', group = 'MiniHipatternsTodo' },
-      --     note      = { pattern = '%f[%w]()NOTE()%f[%W]', group = 'MiniHipatternsNote' },
-      --
-      --     -- Highlight hex color strings (`#rrggbb`) using that color
-      --     hex_color = hipatterns.gen_highlighter.hex_color(),
-      --   },
-      -- })
+      require("mini.tabline").setup()
+      require("mini.statusline").setup()
+      require("mini.notify").setup()
+      local hipatterns = require('mini.hipatterns')
+      hipatterns.setup({
+        highlighters = {
+          -- Highlight standalone 'FIXME', 'HACK', 'TODO', 'NOTE'
+          fixme     = { pattern = '%f[%w]()FIXME()%f[%W]', group = 'MiniHipatternsFixme' },
+          hack      = { pattern = '%f[%w]()HACK()%f[%W]', group = 'MiniHipatternsHack' },
+          todo      = { pattern = '%f[%w]()TODO()%f[%W]', group = 'MiniHipatternsTodo' },
+          note      = { pattern = '%f[%w]()NOTE()%f[%W]', group = 'MiniHipatternsNote' },
 
-      -- require("mini.diff").setup({
-      --   -- Options for how hunks are visualized
-      --   view = {
-      --     -- Visualization style. Possible values are 'sign' and 'number'.
-      --     -- Default: 'number' if line numbers are enabled, 'sign' otherwise.
-      --     style = "sign",
-      --
-      --     -- Signs used for hunks with 'sign' view
-      --     signs = { add = "+", change = "~", delete = "-" },
-      --
-      --     -- Priority of used visualization extmarks
-      --     priority = 199,
-      --   },
-      --   -- Module mappings. Use `''` (empty string) to disable one.
-      --   mappings = {
-      --     -- Apply hunks inside a visual/operator region
-      --     apply = "gh",
-      --
-      --     -- Reset hunks inside a visual/operator region
-      --     reset = "gH",
-      --
-      --     -- Hunk range textobject to be used inside operator
-      --     -- Works also in Visual mode if mapping differs from apply and reset
-      --
-      --     textobject = "gh",
-      --
-      --     -- Go to hunk range in corresponding direction
-      --     goto_first = "[H",
-      --     goto_prev = "[h",
-      --
-      --     goto_next = "]h",
-      --     goto_last = "]H",
-      --   },
-      --
-      --   -- Various options
-      --
-      --   options = {
-      --     -- Diff algorithm. See `:h vim.diff()`.
-      --     algorithm = "histogram",
-      --
-      --     -- Whether to use "indent heuristic". See `:h vim.diff()`.
-      --     indent_heuristic = true,
-      --
-      --     -- The amount of second-stage diff to align lines (in Neovim>=0.9)
-      --
-      --     linematch = 60,
-      --
-      --     -- Whether to wrap around edges during hunk navigation
-      --     wrap_goto = false,
-      --   },
-      -- })
+          -- Highlight hex color strings (`#rrggbb`) using that color
+          hex_color = hipatterns.gen_highlighter.hex_color(),
+        },
+      })
+
+      require("mini.diff").setup({
+        -- Options for how hunks are visualized
+        view = {
+          -- Visualization style. Possible values are 'sign' and 'number'.
+          -- Default: 'number' if line numbers are enabled, 'sign' otherwise.
+          style = "sign",
+
+          -- Signs used for hunks with 'sign' view
+          signs = { add = "+", change = "~", delete = "-" },
+
+          -- Priority of used visualization extmarks
+          priority = 199,
+        },
+        -- Module mappings. Use `''` (empty string) to disable one.
+        mappings = {
+          -- Apply hunks inside a visual/operator region
+          apply = "gh",
+
+          -- Reset hunks inside a visual/operator region
+          reset = "gH",
+
+          -- Hunk range textobject to be used inside operator
+          -- Works also in Visual mode if mapping differs from apply and reset
+
+          textobject = "gh",
+
+          -- Go to hunk range in corresponding direction
+          goto_first = "[H",
+          goto_prev = "[h",
+
+          goto_next = "]h",
+          goto_last = "]H",
+        },
+
+        -- Various options
+
+        options = {
+          -- Diff algorithm. See `:h vim.diff()`.
+          algorithm = "histogram",
+
+          -- Whether to use "indent heuristic". See `:h vim.diff()`.
+          indent_heuristic = true,
+
+          -- The amount of second-stage diff to align lines (in Neovim>=0.9)
+
+          linematch = 60,
+
+          -- Whether to wrap around edges during hunk navigation
+          wrap_goto = false,
+        },
+      })
     end,
   },
   {
@@ -979,15 +957,6 @@ require("lazy").setup({
     version = "^5", -- Recommended
     lazy = false,   -- This plugin is already lazy
   },
-  -- {
-  --     "mattn/emmet-vim",
-  --     lazy = false,
-  --     ft = { "html", "css", "javascript", "javascriptreact", "typescript", "typescriptreact" },
-  -- },
-  -- {
-  --     "mg979/vim-visual-multi",
-  --     lazy = false,
-  -- },
   {
     'nvim-flutter/flutter-tools.nvim',
     ft = { 'dart' },
@@ -998,26 +967,7 @@ require("lazy").setup({
     },
     config = function()
       require("flutter-tools").setup {}
-      map("n", "gD", vim.lsp.buf.declaration)
-      map("n", "gd", vim.lsp.buf.definition)
-      map("n", "K", vim.lsp.buf.hover)
-      map("n", "gi", vim.lsp.buf.implementation)
-      -- map('n', '<C-k>', vim.lsp.buf.signature_help )
-      map("n", "<leader>wa", vim.lsp.buf.add_workspace_folder)
-      map("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder)
-      map("n", "<leader>wl", function()
-        print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-      end)
-      --map('n', '<space>D', vim.lsp.buf.type_definition )
-      map("n", "<leader>r", vim.lsp.buf.rename)
-      map({ "n", "v" }, "<leader>a", vim.lsp.buf.code_action)
-      map("n", "gr", vim.lsp.buf.references)
-      map("n", "[e", function()
-        vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR })
-      end)
-      map("n", "]e", function()
-        vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR })
-      end)
+      require("lsp")
     end
   }
 })
@@ -1026,9 +976,7 @@ map("n", "ff", ":lua vim.lsp.buf.format()<CR>")
 map("n", ";", ":", { desc = "CMD enter command mode" })
 map("i", "jj", "<ESC>")
 map("i", "jk", "<ESC>")
--- map("n", "<leader>m", ":NvimTreeToggle<CR>")
--- map("n", "<leader>n", ":NvimTreeFocus<CR>")
-map("n", "<leader>m", ":Neotree toggle<CR>")
+map("n", "<leader>e", ":Neotree toggle<CR>")
 map("n", "<esc>", ":noh<cr>")
 map("n", "<M-right>", ":vertical resize +1<CR>")
 map("n", "<M-left>", ":vertical resize -1<CR>")
@@ -1050,12 +998,6 @@ map("n", "[b", ":bNext<CR>")
 map("n", "]b", ":bnext<CR>")
 map("n", "<leader>tn", ":tabnext<CR>")
 map("n", "<leader>tp", ":tabprevious<CR>")
--- map("n", "<leader>ff", ":Telescope find_files<cr>")
--- map("n", "<leader><leader>f", ":Telescope live_grep<cr>")
--- map("n", "<leader>b", ":Telescope buffers<cr>")
--- map("n", "<leader>ff", ":FzfLua files<cr>")
--- map("n", "<leader><leader>f", ":FzfLua live_grep<cr>")
--- map("n", "<leader>b", ":FzfLua buffers<cr>")
 map("v", "<leader>l", "$y<cr>")
 map("n", "<leader>sc", ":source %<cr>")
 map("t", "<C-x>", [[<C-\><C-n>]], { noremap = true, silent = true })
@@ -1065,7 +1007,6 @@ map("n", "<leader>te", ":sp | term<CR>", { noremap = true, silent = true })
 map("n", "<leader>go", ":TSToolsOrganizeImports<CR>")
 map("n", "<leader>gi", ":TSToolsAddMissingImports<CR>")
 map("n", "<leader>cm", ":delmarks!<CR>")
-map("n", "<leader><leader>w", ":HopAnywhere<cr>")
 map("n", "<leader>bd", ":bd<cr>")
 map("n", "<leader>rs", ":source ~/.config/nvim/init.lua<cr>")
 map("n", "<leader>ce", function()
@@ -1084,7 +1025,8 @@ map("n", "<leader>n", ":Neotree reveal<cr>")
 
 
 require("lsp")
--- require("winbar")
+require("winbar")
 -- require("auto_cmd")
 -- require("statusline")
 -- vim.cmd[[colorscheme miss-dracula]]
+vim.opt.guicursor = ""
