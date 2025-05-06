@@ -49,9 +49,11 @@ M.symbol_kinds = {
 --- Shared icons that don't really fit into a category.
 M.misc = {
     bug = '',
+    ellipsis = '…',
     git = '',
     search = '',
     vertical_bar = '│',
+    dashed_bar = '┊',
 }
 
 return M

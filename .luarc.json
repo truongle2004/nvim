@@ -3,7 +3,9 @@
         "missing-fields",
         "param-type-mismatch",
         "missing-parameter",
-        "undefined-field"
+        "undefined-field",
+        "assign-type-mismatch",
+        "undefined-doc-name"
     ],
     "completion.autoRequire": false
 }

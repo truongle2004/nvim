@@ -1,3 +1,5 @@
+---@diagnostic disable: undefined-global
+
 local diagnostic_icons = require("icons").diagnostics
 local methods = vim.lsp.protocol.Methods
 
