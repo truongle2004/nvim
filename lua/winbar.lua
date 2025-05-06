@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 local icons = require 'icons'
 
 local M = {}

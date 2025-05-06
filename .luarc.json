@@ -5,7 +5,8 @@
         "missing-parameter",
         "undefined-field",
         "assign-type-mismatch",
-        "undefined-doc-name"
+        "undefined-doc-name",
+        "deprecated"
     ],
     "completion.autoRequire": false
 }

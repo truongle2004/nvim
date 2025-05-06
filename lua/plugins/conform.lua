@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global, unused-local
 return {
 	"stevearc/conform.nvim",
 	event = { "BufReadPre", "BufNewFile" },

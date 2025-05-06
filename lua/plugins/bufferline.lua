@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 -- Pretty bufferline.
 return {
     {
