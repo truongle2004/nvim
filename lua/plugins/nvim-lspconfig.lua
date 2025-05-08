@@ -5,7 +5,17 @@ return {
 	opts = {
 		servers = {
 			lua_ls = {},
-			gopls = {},
+			gopls = {
+				settings = {
+					gopls = {
+						["ui.inlayhint.hints"] = {
+							compositeLiteralFields = true,
+							constantValues = true,
+							parameterNames = true,
+						},
+					},
+				},
+			},
 		},
 	},
 

@@ -50,3 +50,4 @@ map("n", "<leader>ce", function()
 	end
 end)
 map("n", "<leader>n", ":Neotree reveal<cr>")
+
