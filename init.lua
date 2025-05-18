@@ -88,4 +88,4 @@ require("lazy").setup(plugins, {
 })
 
 -- Change the cursor shape (should be in last line)
-vim.opt.guicursor = ""
+-- vim.opt.guicursor = ""

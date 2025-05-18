@@ -6,15 +6,15 @@ return {
 		servers = {
 			lua_ls = {},
 			gopls = {
-				settings = {
-					gopls = {
-						["ui.inlayhint.hints"] = {
-							compositeLiteralFields = true,
-							constantValues = true,
-							parameterNames = true,
-						},
-					},
-				},
+				-- settings = {
+				-- 	gopls = {
+				-- 		["ui.inlayhint.hints"] = {
+				-- 			compositeLiteralFields = true,
+				-- 			constantValues = true,
+				-- 			parameterNames = true,
+				-- 		},
+				-- 	},
+				-- },
 			},
 		},
 	},

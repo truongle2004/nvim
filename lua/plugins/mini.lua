@@ -6,6 +6,11 @@ return {
 	config = function()
 		require("mini.comment").setup()
 		require("mini.move").setup()
+        require("mini.animate").setup({
+            scroll = {
+                enable = false
+            }
+        })
         -- require("mini.statusline").setup()
 		require("mini.pairs").setup()
 		local hipatterns = require("mini.hipatterns")
