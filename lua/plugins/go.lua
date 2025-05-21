@@ -20,6 +20,6 @@ return {
 			group = format_sync_grp,
 		})
 
-		-- vim.diagnostic.config({ virtual_text = false })
+		vim.diagnostic.config({ virtual_text = false })
 	end,
 }

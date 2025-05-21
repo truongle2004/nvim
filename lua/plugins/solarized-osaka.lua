@@ -5,9 +5,9 @@ return {
 	priority = 1000,
 	opts = {},
 	config = function()
-	       require('solarized-osaka').setup({
-	           transparent = true
-	       })
+		require("solarized-osaka").setup({
+			transparent = false,
+		})
 		vim.cmd([[colorscheme solarized-osaka]])
 	end,
 }

@@ -4,14 +4,15 @@ return {
 	dependencies = {},
 	version = "*",
 	config = function()
-		require("mini.comment").setup()
+		-- require("mini.comment").setup()
 		require("mini.move").setup()
-        require("mini.animate").setup({
-            scroll = {
-                enable = false
-            }
-        })
-        -- require("mini.statusline").setup()
+		require("mini.indentscope").setup()
+		require("mini.animate").setup({
+			scroll = {
+				enable = false,
+			},
+		})
+		-- require("mini.statusline").setup()
 		require("mini.pairs").setup()
 		local hipatterns = require("mini.hipatterns")
 		hipatterns.setup({
@@ -27,8 +28,7 @@ return {
 			},
 		})
 
-
-        require("mini.diff").setup()
+		require("mini.diff").setup()
 		-- require("mini.diff").setup({
 		-- 	-- Options for how hunks are visualized
 		-- 	view = {
