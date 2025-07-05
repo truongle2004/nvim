@@ -32,7 +32,8 @@ vim.g.projects_dir = vim.env.HOME .. "/home/lesytruong/projects/"
 -- 	return nil
 -- end
 --
-
+--
+--
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({

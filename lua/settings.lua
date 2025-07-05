@@ -1,10 +1,11 @@
 ---@diagnostic disable: undefined-global
-local arrows = require('icons').arrows
+local arrows = require("icons").arrows
 
 -- Set <space> as the leader key.
-vim.g.mapleader = ' '
+vim.g.mapleader = " "
 
 -- Use an indentation of 4 spaces.
+vim.o.completeopt = "menu,menuone,preview,noselect"
 vim.o.sw = 4
 vim.o.ts = 4
 vim.o.et = true
@@ -17,34 +18,35 @@ vim.o.et = true
 vim.wo.number = true
 
 -- Enable mouse mode.
-vim.o.mouse = 'a'
+vim.o.mouse = "a"
 
 -- Disable horizontal scrolling.
-vim.o.mousescroll = 'ver:3,hor:0'
+vim.o.mousescroll = "ver:3,hor:0"
 
 -- Wrap long lines at words.
 vim.o.linebreak = true
 
 -- Folding.
-vim.o.foldcolumn = '1'
+vim.o.foldcolumn = "1"
 vim.o.foldlevelstart = 99
-vim.wo.foldtext = ''
+vim.wo.foldtext = ""
+vim.o.linespace = 2
 
 -- UI characters.
 vim.opt.fillchars = {
-    eob = ' ',
-    fold = ' ',
-    foldclose = arrows.right,
-    foldopen = arrows.down,
-    foldsep = ' ',
-    msgsep = '─',
+	eob = " ",
+	fold = " ",
+	foldclose = arrows.right,
+	foldopen = arrows.down,
+	foldsep = " ",
+	msgsep = "─",
 }
 
 -- Use rounded borders for floating windows.
-vim.o.winborder = 'rounded'
+vim.o.winborder = "rounded"
 
 -- Sync clipboard between the OS and Neovim.
-vim.o.clipboard = 'unnamedplus'
+vim.o.clipboard = "unnamedplus"
 
 -- Save undo history.
 vim.o.undofile = true
@@ -54,7 +56,7 @@ vim.o.ignorecase = true
 vim.o.smartcase = true
 
 -- Keep signcolumn on by default.
-vim.wo.signcolumn = 'yes'
+vim.wo.signcolumn = "yes"
 
 -- Update times and timeouts.
 vim.o.updatetime = 300
@@ -62,25 +64,25 @@ vim.o.timeoutlen = 500
 vim.o.ttimeoutlen = 10
 
 -- Completion.
-vim.opt.wildignore:append { '.DS_Store' }
-vim.o.completeopt = 'menuone,noselect,noinsert'
+vim.opt.wildignore:append({ ".DS_Store" })
+vim.o.completeopt = "menuone,noselect,noinsert"
 vim.o.pumheight = 15
 
 -- Diff mode settings.
 -- Setting the context to a very large number disables folding.
-vim.opt.diffopt:append 'vertical,context:99'
+vim.opt.diffopt:append("vertical,context:99")
 
-vim.opt.shortmess:append {
-    w = true,
-    s = true,
-}
+vim.opt.shortmess:append({
+	w = true,
+	s = true,
+})
 
 -- Status line.
 vim.o.laststatus = 3
 vim.o.cmdheight = 1
 
 -- Disable cursor blinking in terminal mode.
-vim.o.guicursor = 'n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20,t:block-TermCursor'
+vim.o.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20,t:block-TermCursor"
 
 -- Disable health checks for these providers.
 vim.g.loaded_python3_provider = 0
@@ -90,7 +92,7 @@ vim.g.loaded_node_provider = 0
 
 -- neovide config
 if vim.g.neovide then
-    vim.keymap.set({ "n", "v" }, "<C-+>", ":lua vim.g.neovide_scale_factor = vim.g.neovide_scale_factor + 0.1<CR>")
-    vim.keymap.set({ "n", "v" }, "<C-->", ":lua vim.g.neovide_scale_factor = vim.g.neovide_scale_factor - 0.1<CR>")
-    vim.keymap.set({ "n", "v" }, "<C-0>", ":lua vim.g.neovide_scale_factor = 1<CR>")
+	vim.keymap.set({ "n", "v" }, "<C-+>", ":lua vim.g.neovide_scale_factor = vim.g.neovide_scale_factor + 0.1<CR>")
+	vim.keymap.set({ "n", "v" }, "<C-->", ":lua vim.g.neovide_scale_factor = vim.g.neovide_scale_factor - 0.1<CR>")
+	vim.keymap.set({ "n", "v" }, "<C-0>", ":lua vim.g.neovide_scale_factor = 1<CR>")
 end
