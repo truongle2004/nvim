@@ -126,28 +126,28 @@ require("lazy").setup({
     },
 
     -- Colorscheme
-    {
-        "wincent/base16-nvim",
-        lazy = false,
-        priority = 1000,
-        config = function()
-            vim.cmd([[colorscheme gruvbox-dark-hard]])
-            vim.o.background = 'dark'
-
-            -- Customize highlighting
-            local bools = vim.api.nvim_get_hl(0, { name = 'Boolean' })
-            vim.api.nvim_set_hl(0, 'Comment', bools)
-
-            local marked = vim.api.nvim_get_hl(0, { name = 'PMenu' })
-            vim.api.nvim_set_hl(0, 'LspSignatureActiveParameter', {
-                fg = marked.fg,
-                bg = marked.bg,
-                ctermfg = marked.ctermfg,
-                ctermbg = marked.ctermbg,
-                bold = true
-            })
-        end
-    },
+    -- {
+    --     "wincent/base16-nvim",
+    --     lazy = false,
+    --     priority = 1000,
+    --     config = function()
+    --         vim.cmd([[colorscheme gruvbox-dark-hard]])
+    --         vim.o.background = 'dark'
+    --
+    --         -- Customize highlighting
+    --         local bools = vim.api.nvim_get_hl(0, { name = 'Boolean' })
+    --         vim.api.nvim_set_hl(0, 'Comment', bools)
+    --
+    --         local marked = vim.api.nvim_get_hl(0, { name = 'PMenu' })
+    --         vim.api.nvim_set_hl(0, 'LspSignatureActiveParameter', {
+    --             fg = marked.fg,
+    --             bg = marked.bg,
+    --             ctermfg = marked.ctermfg,
+    --             ctermbg = marked.ctermbg,
+    --             bold = true
+    --         })
+    --     end
+    -- },
 
     -- Inline diagnostics
     {
@@ -176,6 +176,20 @@ require("lazy").setup({
         version = '*',
         config = function()
             require("mini.tabline").setup()
+        end
+    },
+
+    {
+        "craftzdog/solarized-osaka.nvim",
+        lazy = false,
+        priority = 1000,
+        opts = {},
+        config = function()
+            require("solarized-osaka").setup({
+                background_style = "dark",
+                transparent = true
+            })
+            vim.cmd([[colorscheme solarized-osaka]])
         end
     },
 
@@ -221,8 +235,40 @@ require("lazy").setup({
     {
         "ibhagwan/fzf-lua",
         cmd = "FzfLua",
+        -- opts = {
+        --     file_ignore_patterns = {
+        --         "node_modules/",
+        --         "dist/",
+        --         ".next/",
+        --         ".git",
+        --         ".gitlab/",
+        --         "build/",
+        --         "target/",
+        --         "package-lock.json",
+        --         "pnpm-lock.yaml",
+        --         "yarn.lock",
+        --     },
+        -- },
         config = function()
-            require("fzf-lua").setup {}
+            require("fzf-lua").setup {
+                file_ignore_patterns = {
+                    "node_modules/",
+                    "dist/",
+                    ".next/",
+                    ".git",
+                    ".gitlab/",
+                    "build/",
+                    "target/",
+                    "package-lock.json",
+                    "pnpm-lock.yaml",
+                    "yarn.lock",
+                    "venv",
+                    "__pycache__",
+
+                    
+                },
+
+            }
         end
     },
 
@@ -250,9 +296,20 @@ require("lazy").setup({
         end,
     },
 
-    -- AI completion
     {
-        "Exafunction/codeium.vim",
+        "Exafunction/windsurf.nvim",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "hrsh7th/nvim-cmp",
+        },
+        config = function()
+            require("codeium").setup({
+                virtual_text = {
+                    enabled = true,
+                }
+
+            })
+        end
     },
 
     -- Auto-completion
@@ -389,17 +446,17 @@ require("lazy").setup({
     performance = {
         rpt = {
             disabled_plugins = {
-                "gzip",
                 "netrwPlugin",
                 "rplugin",
                 "tarPlugin",
                 "tohtml",
                 "tutor",
-                "zipPlugin",
             }
         }
     }
 })
+
+
 
 -- Autocommands
 local function create_autocmds()
