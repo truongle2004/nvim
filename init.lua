@@ -17,7 +17,7 @@ vim.o.mouse = "a"
 vim.o.mousescroll = "ver:3,hor:0"
 vim.o.linebreak = true
 vim.o.winborder = "rounded"
-vim.o.laststatus = 3
+vim.o.laststatus = 1
 vim.o.cmdheight = 1
 vim.o.showmode = false
 
@@ -89,6 +89,48 @@ require("lazy").setup({
             local capabilities = require("cmp_nvim_lsp").default_capabilities()
             local map = vim.keymap.set
 
+            lspconfig.html.setup({
+                capabilities = capabilities,
+            })
+
+            lspconfig.cssls.setup({
+                capabilities = capabilities,
+            })
+
+            lspconfig.lua_ls.setup({
+                capabilities = capabilities,
+                settings = {
+                    Lua = {
+                        runtime = {
+                            version = "LuaJIT",
+                        },
+                        diagnostics = {
+                            globals = { "vim" },
+                        },
+                        workspace = {
+                            library = vim.api.nvim_get_runtime_file("", true),
+                        },
+                        telemetry = {
+                            enable = false,
+                        },
+                    },
+                },
+            })
+
+            lspconfig.pylsp.setup({
+                capabilities = capabilities,
+                -- settings = {
+                --     python = {
+                --         venvPath = ".",
+                --         venv = ".venv",
+                --         analysis = {
+                --             autoSearchPaths = true,
+                --             useLibraryCodeForTypes = true
+                --         }
+                --     }
+                -- }
+            })
+
             -- Go LSP setup
             lspconfig.gopls.setup({
                 capabilities = capabilities,
@@ -117,13 +159,82 @@ require("lazy").setup({
         end,
     },
 
-    -- Rust support
     {
-        "mrcjkb/rustaceanvim",
-        ft = "rust",
-        version = "^5",
-        lazy = false,
+        "stevearc/conform.nvim",
+        event = { "BufReadPre", "BufNewFile" },
+        config = function()
+            local conform = require("conform")
+
+            conform.setup({
+                formatters_by_ft = {
+                    javascript = { "prettier" },
+                    typescript = { "prettier" },
+                    javascriptreact = { "prettier" },
+                    typescriptreact = { "prettier" },
+                    css = { "prettier" },
+                    html = { "prettier" },
+                    json = { "prettier" },
+                    yaml = { "prettier" },
+                    markdown = { "prettier" },
+                    graphql = { "prettier" },
+                    liquid = { "prettier" },
+                    lua = { "stylua" },
+                    cpp = { "clang-format" },
+                    python = { "black" },
+                    xml = { "xmlformatter" },
+                },
+                -- format_on_save = {
+                -- 	timeout_ms = 500,
+                -- 	lsp_format = "fallback",
+                -- },
+            })
+
+            vim.keymap.set({ "n", "v" }, "<leader>mp", function()
+                conform.format({
+                    lsp_fallback = true,
+                    async = false,
+                    timeout_ms = 1000,
+                })
+            end, { desc = "Format file or range (in visual mode)" })
+        end,
     },
+    {
+        "nvim-treesitter/nvim-treesitter",
+        -- dependencies = {
+        --   "HiPhish/rainbow-delimiters.nvim"
+        -- },
+        config = function()
+            require("nvim-treesitter.configs").setup({
+                highlight = {
+                    enable = true,
+                },
+            })
+        end,
+    },
+    {
+        "nvim-tree/nvim-web-devicons",
+        -- Lots of plugins will require this later.
+        lazy = true,
+        opts = {
+            -- Make the icon for query files more visible.
+            override = {
+                scm = {
+                    icon = "󰘧",
+                    color = "#A9ABAC",
+                    cterm_color = "16",
+                    name = "Scheme",
+                },
+            },
+        },
+    },
+
+    -- Rust support
+    -- {
+    --     "mrcjkb/rustaceanvim",
+    --     ft = "rust",
+    --     version = "^5",
+    --     lazy = false,
+    -- },
 
     -- Colorscheme
     -- {
@@ -187,47 +298,9 @@ require("lazy").setup({
         config = function()
             require("solarized-osaka").setup({
                 background_style = "dark",
-                transparent = true
+                transparent = false
             })
             vim.cmd([[colorscheme solarized-osaka]])
-        end
-    },
-
-    -- Status line
-    {
-        'itchyny/lightline.vim',
-        lazy = false,
-        config = function()
-            vim.g.lightline = {
-                active = {
-                    left = {
-                        { 'mode',     'paste' },
-                        { 'readonly', 'filename', 'modified' }
-                    },
-                    right = {
-                        { 'lineinfo' },
-                        { 'percent' },
-                        { 'fileencoding', 'filetype' }
-                    },
-                },
-                component_function = {
-                    filename = 'LightlineFilename'
-                },
-            }
-
-            function LightlineFilenameInLua(opts)
-                if vim.fn.expand('%:t') == '' then
-                    return '[No Name]'
-                else
-                    return vim.fn.getreg('%')
-                end
-            end
-
-            vim.api.nvim_exec([[
-                function! g:LightlineFilename()
-                    return v:lua.LightlineFilenameInLua()
-                endfunction
-            ]], true)
         end
     },
 
@@ -235,20 +308,6 @@ require("lazy").setup({
     {
         "ibhagwan/fzf-lua",
         cmd = "FzfLua",
-        -- opts = {
-        --     file_ignore_patterns = {
-        --         "node_modules/",
-        --         "dist/",
-        --         ".next/",
-        --         ".git",
-        --         ".gitlab/",
-        --         "build/",
-        --         "target/",
-        --         "package-lock.json",
-        --         "pnpm-lock.yaml",
-        --         "yarn.lock",
-        --     },
-        -- },
         config = function()
             require("fzf-lua").setup {
                 file_ignore_patterns = {
@@ -265,11 +324,38 @@ require("lazy").setup({
                     "venv",
                     "__pycache__",
 
-                    
+
                 },
 
             }
         end
+    },
+
+    {
+        "pmizio/typescript-tools.nvim",
+        dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+        filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
+        opts = {},
+        config = function()
+            local api = require("typescript-tools.api")
+            require("typescript-tools").setup({
+                handlers = {
+                    ["textDocument/publishDiagnostics"] = api.filter_diagnostics(
+                    -- Ignore 'This may be converted to an async function' diagnostics.
+                        { 80006 }
+                    ),
+                },
+                settings = {
+                    jsx_close_tag = {
+                        enable = true,
+                        filetypes = { "javascriptreact", "typescriptreact" },
+                    },
+                    -- tsserver_file_preferences = {
+                    -- 	-- includeInlayParameterNameHints = "all",
+                    -- },
+                },
+            })
+        end,
     },
 
     -- Go support
@@ -327,39 +413,6 @@ require("lazy").setup({
             local capabilities = vim.lsp.protocol.make_client_capabilities()
             capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
-            lspConfig.lua_ls.setup({
-                capabilities = capabilities,
-                settings = {
-                    Lua = {
-                        runtime = {
-                            version = "LuaJIT",
-                        },
-                        diagnostics = {
-                            globals = { "vim" },
-                        },
-                        workspace = {
-                            library = vim.api.nvim_get_runtime_file("", true),
-                        },
-                        telemetry = {
-                            enable = false,
-                        },
-                    },
-                },
-            })
-
-            lspConfig.pylsp.setup({
-                capabilities = capabilities,
-                -- settings = {
-                --     python = {
-                --         venvPath = ".",
-                --         venv = ".venv",
-                --         analysis = {
-                --             autoSearchPaths = true,
-                --             useLibraryCodeForTypes = true
-                --         }
-                --     }
-                -- }
-            })
 
             cmp.setup({
                 snippet = {
