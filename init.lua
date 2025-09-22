@@ -645,6 +645,11 @@ local function setup_keymaps()
     -- Clear search highlight
     map("n", "<esc>", ":noh<cr>")
 
+    -- Better indenting in visual mode
+    map("v", "<", "<gv", { desc = "Indent left and reselect" })
+    map("v", ">", ">gv", { desc = "Indent right and reselect" })
+
+
     -- Window resizing
     map("n", "<M-right>", ":vertical resize +1<CR>")
     map("n", "<M-left>", ":vertical resize -1<CR>")
