@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 vim.loader.enable()
 
 -- Leader key
@@ -17,7 +18,7 @@ vim.o.mouse = "a"
 vim.o.mousescroll = "ver:3,hor:0"
 vim.o.linebreak = true
 vim.o.winborder = "rounded"
-vim.o.laststatus = 1
+vim.o.laststatus = 3
 vim.o.cmdheight = 1
 vim.o.showmode = false
 
@@ -81,84 +82,6 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Plugin setup
 require("lazy").setup({
-    -- LSP Configuration
-    {
-        "neovim/nvim-lspconfig",
-        config = function()
-            local lspconfig = require("lspconfig")
-            local capabilities = require("cmp_nvim_lsp").default_capabilities()
-            local map = vim.keymap.set
-
-            lspconfig.html.setup({
-                capabilities = capabilities,
-            })
-
-            lspconfig.cssls.setup({
-                capabilities = capabilities,
-            })
-
-            lspconfig.lua_ls.setup({
-                capabilities = capabilities,
-                settings = {
-                    Lua = {
-                        runtime = {
-                            version = "LuaJIT",
-                        },
-                        diagnostics = {
-                            globals = { "vim" },
-                        },
-                        workspace = {
-                            library = vim.api.nvim_get_runtime_file("", true),
-                        },
-                        telemetry = {
-                            enable = false,
-                        },
-                    },
-                },
-            })
-
-            lspconfig.pylsp.setup({
-                capabilities = capabilities,
-                -- settings = {
-                --     python = {
-                --         venvPath = ".",
-                --         venv = ".venv",
-                --         analysis = {
-                --             autoSearchPaths = true,
-                --             useLibraryCodeForTypes = true
-                --         }
-                --     }
-                -- }
-            })
-
-            -- Go LSP setup
-            lspconfig.gopls.setup({
-                capabilities = capabilities,
-            })
-
-            -- LSP keymaps
-            map("n", "gD", vim.lsp.buf.declaration)
-            map("n", "gd", vim.lsp.buf.definition)
-            map("n", "K", vim.lsp.buf.hover)
-            map("n", "gi", vim.lsp.buf.implementation)
-            map("n", "ff", vim.lsp.buf.format)
-            map("n", "<leader>wa", vim.lsp.buf.add_workspace_folder)
-            map("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder)
-            map("n", "<leader>wl", function()
-                print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-            end)
-            map("n", "<leader>r", vim.lsp.buf.rename)
-            map({ "n", "v" }, "<leader>a", vim.lsp.buf.code_action)
-            map("n", "gr", vim.lsp.buf.references)
-            map("n", "[e", function()
-                vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR })
-            end)
-            map("n", "]e", function()
-                vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR })
-            end)
-        end,
-    },
-
     {
         "stevearc/conform.nvim",
         event = { "BufReadPre", "BufNewFile" },
@@ -210,6 +133,104 @@ require("lazy").setup({
                 },
             })
         end,
+    },
+    {
+        'nvim-mini/mini.nvim',
+        version = '*',
+        config = function()
+            require('mini.comment').setup()
+            require("mini.git").setup()
+            require('mini.indentscope').setup()
+            require('mini.pairs').setup()
+            require('mini.trailspace').setup()
+            require('mini.statusline').setup()
+            require('mini.tabline').setup()
+            require('mini.bufremove').setup()
+            local hipatterns = require("mini.hipatterns")
+            hipatterns.setup({
+                highlighters = {
+                    -- Highlight standalone 'FIXME', 'HACK', 'TODO', 'NOTE'
+                    fixme = { pattern = "%f[%w]()FIXME()%f[%W]", group = "MiniHipatternsFixme" },
+                    hack = { pattern = "%f[%w]()HACK()%f[%W]", group = "MiniHipatternsHack" },
+                    todo = { pattern = "%f[%w]()TODO()%f[%W]", group = "MiniHipatternsTodo" },
+                    note = { pattern = "%f[%w]()NOTE()%f[%W]", group = "MiniHipatternsNote" },
+
+                    -- Highlight hex color strings (`#rrggbb`) using that color
+                    hex_color = hipatterns.gen_highlighter.hex_color(),
+                },
+            })
+            require("mini.diff").setup({
+                -- Options for how hunks are visualized
+                view = {
+                    -- Visualization style. Possible values are 'sign' and 'number'.
+                    -- Default: 'number' if line numbers are enabled, 'sign' otherwise.
+                    style = "sign",
+
+                    -- Signs used for hunks with 'sign' view
+                    signs = { add = "+", change = "~", delete = "-" },
+
+                    -- Priority of used visualization extmarks
+                    priority = 199,
+                },
+                -- Module mappings. Use `''` (empty string) to disable one.
+                mappings = {
+                    -- Apply hunks inside a visual/operator region
+                    apply = "gh",
+
+                    -- Reset hunks inside a visual/operator region
+                    reset = "gH",
+
+                    -- Hunk range textobject to be used inside operator
+                    -- Works also in Visual mode if mapping differs from apply and reset
+
+                    textobject = "gh",
+
+                    -- Go to hunk range in corresponding direction
+                    goto_first = "[H",
+                    goto_prev = "[h",
+
+                    goto_next = "]h",
+                    goto_last = "]H",
+                },
+
+                -- Various options
+
+                options = {
+                    -- Diff algorithm. See `:h vim.diff()`.
+                    algorithm = "histogram",
+
+                    -- Whether to use "indent heuristic". See `:h vim.diff()`.
+                    indent_heuristic = true,
+
+                    -- The amount of second-stage diff to align lines (in Neovim>=0.9)
+
+                    linematch = 60,
+
+                    -- Whether to wrap around edges during hunk navigation
+                    wrap_goto = false,
+                },
+            })
+        end
+    },
+    {
+        "kdheepak/lazygit.nvim",
+        lazy = true,
+        cmd = {
+            "LazyGit",
+            "LazyGitConfig",
+            "LazyGitCurrentFile",
+            "LazyGitFilter",
+            "LazyGitFilterCurrentFile",
+        },
+        -- optional for floating window border decoration
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+        },
+        -- setting the keybinding for LazyGit with 'keys' is recommended in
+        -- order to load the plugin when the command is run for the first time
+        keys = {
+            { "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
+        }
     },
     {
         "nvim-tree/nvim-web-devicons",
@@ -281,14 +302,6 @@ require("lazy").setup({
         }
     },
 
-    -- Tabline
-    {
-        'echasnovski/mini.tabline',
-        version = '*',
-        config = function()
-            require("mini.tabline").setup()
-        end
-    },
 
     {
         "craftzdog/solarized-osaka.nvim",
@@ -453,22 +466,6 @@ require("lazy").setup({
         end,
     },
 
-    {
-        'echasnovski/mini.pairs',
-        version = '*',
-        config = function()
-            require("mini.pairs").setup()
-        end
-
-    },
-    {
-        'echasnovski/mini.surround',
-        version = '*',
-        config = function()
-            require("mini.surround").setup()
-        end
-    },
-
     -- File explorer
     {
         "nvim-neo-tree/neo-tree.nvim",
@@ -492,6 +489,16 @@ require("lazy").setup({
             })
         end,
     },
+    {
+        "iamcco/markdown-preview.nvim",
+        cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+        build = "cd app && yarn install",
+        init = function()
+            vim.g.mkdp_filetypes = { "markdown" }
+        end,
+        ft = { "markdown" },
+    },
+
 }, {
     rocks = {
         enabled = false,
@@ -685,6 +692,7 @@ local function setup_keymaps()
     map("v", "<leader>l", "$y<cr>")
     map("n", "<leader>sc", ":source %<cr>")
     map("n", "<leader>rs", ":source ~/.config/nvim/init.lua<cr>")
+    map("n", "<leader>rc", ":e ~/.config/nvim/init.lua<cr>")
     map("t", "<C-x>", [[<C-\><C-n>]], { noremap = true, silent = true })
     map("n", "<F3>", ":set spell! spell?<CR>", { noremap = true, silent = true })
     map("n", "<leader>rq", ":cfdo %s///g | update | bd")
@@ -692,6 +700,28 @@ local function setup_keymaps()
     map("n", "<leader>go", ":TSToolsOrganizeImports<CR>")
     map("n", "<leader>gi", ":TSToolsAddMissingImports<CR>")
     map("n", "<leader>cm", ":delmarks!<CR>")
+
+
+    -- LSP keymaps
+    map("n", "gD", vim.lsp.buf.declaration)
+    map("n", "gd", vim.lsp.buf.definition)
+    map("n", "K", vim.lsp.buf.hover)
+    map("n", "gi", vim.lsp.buf.implementation)
+    map("n", "ff", vim.lsp.buf.format)
+    map("n", "<leader>wa", vim.lsp.buf.add_workspace_folder)
+    map("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder)
+    map("n", "<leader>wl", function()
+        print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+    end)
+    map("n", "<leader>r", vim.lsp.buf.rename)
+    map({ "n", "v" }, "<leader>a", vim.lsp.buf.code_action)
+    map("n", "gr", vim.lsp.buf.references)
+    map("n", "[e", function()
+        vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR })
+    end)
+    map("n", "]e", function()
+        vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR })
+    end)
 
     -- Copy diagnostic message
     map("n", "<leader>ce", function()
@@ -708,3 +738,8 @@ local function setup_keymaps()
 end
 
 setup_keymaps()
+
+vim.lsp.enable("lua_ls")
+vim.lsp.enable("bash_ls")
+vim.lsp.enable("cssls")
+vim.lsp.enable("tailwindcss")
