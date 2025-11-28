@@ -462,15 +462,41 @@ require("lazy").setup({
 			"L3MON4D3/LuaSnip",
 			"saadparwaiz1/cmp_luasnip",
 			"hrsh7th/cmp-buffer",
-			-- "hrsh7th/cmp-path",
+			"onsails/lspkind-nvim",
+			"hrsh7th/cmp-emoji",
+			"f3fora/cmp-spell",
+			"hrsh7th/cmp-path",
+			"hrsh7th/cmp-calc",
 		},
 		config = function()
 			local cmp = require("cmp")
 			local luasnip = require("luasnip")
+			local lspkind = require("lspkind")
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
 			capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 
 			cmp.setup({
+				formatting = {
+					format = lspkind.cmp_format({
+						mode = "symbol", -- show only symbol annotations
+						maxwidth = {
+							-- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
+							-- can also be a function to dynamically calculate max width such as
+							-- menu = function() return math.floor(0.45 * vim.o.columns) end,
+							menu = 50, -- leading text (labelDetails)
+							abbr = 50, -- actual suggestion item
+						},
+						ellipsis_char = "...", -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
+						show_labelDetails = true, -- show labelDetails in menu. Disabled by default
+
+						-- The function below will be called before any actual modifications from lspkind
+						-- so that you can provide more controls on popup customization. (See [#30](https://github.com/onsails/lspkind-nvim/pull/30))
+						before = function(entry, vim_item)
+							-- ...
+							return vim_item
+						end,
+					}),
+				},
 				snippet = {
 					expand = function(args)
 						luasnip.lsp_expand(args.body)
@@ -491,9 +517,68 @@ require("lazy").setup({
 				sources = cmp.config.sources({
 					{ name = "nvim_lsp" },
 					{ name = "luasnip" },
-				}, {
 					{ name = "buffer" },
+					{ name = "path" },
+					{ name = "nvim_lua" },
+					{ name = "calc" },
+					{ name = "emoji" },
+					{ name = "spell", keyword_length = 4 },
 				}),
+				formatting = {
+					fields = { "kind", "abbr", "menu" },
+					format = function(entry, vim_item)
+						-- This is the kind_icons variable I was talking about earlier.
+						local kind_icons = {
+							Text = " ",
+							Method = "󰆧  ",
+							Function = "󰊕",
+							Constructor = " ",
+							Field = "󰇽 ",
+							Variable = "󰂡",
+							Class = "󰠱 ",
+							Interface = "  ",
+							Module = "  ",
+							Property = "󰜢 ",
+							Unit = " ",
+							Value = "󰎠 ",
+							Enum = " ",
+							Keyword = "󰌋 ",
+							Snippet = " ",
+							Color = "󰏘 ",
+							File = "󰈙 ",
+							Reference = " ",
+							Folder = "󰉋 ",
+							EnumMember = " ",
+							Constant = "󰏿",
+							Struct = "  ",
+							Event = " ",
+							Operator = "󰆕 ",
+							TypeParameter = "󰅲",
+						}
+						local kind = require("lspkind").cmp_format({
+							symbol_map = kind_icons,
+							mode = "symbol_text",
+							maxwidth = 50, -- I also tried to modify this value but nothing changes
+						})(entry, vim_item)
+						local custom_menu_icon = {
+							calc = "󰃬",
+						}
+						if entry.source.name == "calc" then
+							vim_item.kind = custom_menu_icon.calc
+						end
+						local strings = vim.split(kind.kind, "%s", { trimempty = true })
+						kind.kind = " " .. (strings[1] or "") .. " "
+						kind.menu = "(" .. (strings[2] or "") .. ")"
+
+						return kind
+					end,
+				},
+				-- sources = cmp.config.sources({
+				-- 	{ name = "nvim_lsp" },
+				-- 	{ name = "luasnip" },
+				-- }, {
+				-- 	{ name = "buffer" },
+				-- }),
 			})
 
 			-- cmp.setup.cmdline(":", {
